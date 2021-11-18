@@ -5,7 +5,11 @@
 export const environment = {
   production: false
 };
-
+export const host = 'https://consult-trico.com/genesis/api/';
+export const image_path = 'https://consult-trico.com/genesis/public/uploads/';
+export const logval = {
+  production: 'not'
+};
 /*
  * For easier debugging in development mode, you can import the following file
  * to ignore zone related error stack frames such as `zone.run`, `zoneDelegate.invokeTask`.

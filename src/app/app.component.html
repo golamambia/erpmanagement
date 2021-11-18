@@ -3,24 +3,29 @@
     <ion-menu contentId="main-content" type="overlay">
       <ion-content>
         <ion-list id="inbox-list">
-          <ion-list-header>Inbox</ion-list-header>
-          <ion-note>hi@ionicframework.com</ion-note>
+          <ion-list-header>ABC</ion-list-header>
+          <ion-note>hi@abc.com</ion-note>
 
-          <ion-menu-toggle auto-hide="false" *ngFor="let p of appPages; let i = index">
-            <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
-              <ion-icon slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
-              <ion-label>{{ p.title }}</ion-label>
+         <!--  <ion-menu-toggle auto-hide="false" >
+            <ion-item routerDirection="root" [routerLink]="gghh" lines="none" detail="false" routerLinkActive="selected">
+              <ion-icon slot="start"></ion-icon>
+              <ion-label>ggg</ion-label>
             </ion-item>
-          </ion-menu-toggle>
+          </ion-menu-toggle> -->
         </ion-list>
 
         <ion-list id="labels-list">
-          <ion-list-header>Labels</ion-list-header>
+          <ion-list-header>Module</ion-list-header>
 
-          <ion-item *ngFor="let label of labels" lines="none">
+          <ion-item lines="none" routerLink="/attendence" (click)="close()">
             <ion-icon slot="start" ios="bookmark-outline" md="bookmark-sharp"></ion-icon>
-            <ion-label>{{ label }}</ion-label>
+            <ion-label>Attendence</ion-label>
           </ion-item>
+          <ion-item lines="none" routerLink="/attendence-expense" (click)="close()">
+            <ion-icon slot="start" ios="bookmark-outline" md="bookmark-sharp"></ion-icon>
+            <ion-label>Expense</ion-label>
+          </ion-item>
+
         </ion-list>
       </ion-content>
     </ion-menu>
