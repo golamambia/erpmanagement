@@ -12,9 +12,15 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { Events } from "./event/events.service";
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { LocationAccuracy } from '@ionic-native/location-accuracy/ngx';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
+import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
 import { NativeGeocoder } from '@ionic-native/native-geocoder/ngx';
 import { DatePipe } from '@angular/common';
+import { Camera } from '@ionic-native/camera/ngx';
+import { PhotoViewer } from '@ionic-native/photo-viewer/ngx';
+import { Base64 } from '@ionic-native/base64/ngx';
+
 
 @NgModule({
   declarations: [AppComponent],
@@ -26,7 +32,9 @@ import { DatePipe } from '@angular/common';
   ],
   providers: [
   { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }, 
-  Events, NativeGeocoder, Geolocation,Storage,DatePipe
+  Events, NativeGeocoder, Storage,DatePipe,Camera,PhotoViewer,Base64, LocationAccuracy,
+    Geolocation,
+    AndroidPermissions,
   ],
   bootstrap: [AppComponent],
 })

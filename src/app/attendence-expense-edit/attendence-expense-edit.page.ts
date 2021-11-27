@@ -16,6 +16,9 @@ import { DatePipe } from '@angular/common';
 import * as moment from 'moment';
 import { NativeGeocoder, NativeGeocoderResult, NativeGeocoderOptions } from '@ionic-native/native-geocoder/ngx';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
+import { Camera, CameraOptions } from '@ionic-native/camera/ngx';
+import { PhotoViewer } from '@ionic-native/photo-viewer/ngx';
+import { Base64 } from '@ionic-native/base64/ngx';
 declare var window: any;
 
 @Component({
@@ -64,6 +67,9 @@ minTime:any='';
  address:any='';
  current_address:any='';
  expense_amount:any='';
+ stindex:any='';
+ depositImage:any = "";
+ isToggled: boolean;
  constructor(private http: HttpClient, public navCtrl: NavController,
     public storage: Storage,public loadingController: LoadingController,
     public alertController: AlertController,
@@ -72,6 +78,10 @@ minTime:any='';
        private datePipe: DatePipe,
        public nativeGeocoder: NativeGeocoder, 
        public geolocation: Geolocation,
+       public camera: Camera,
+       private photoViewer: PhotoViewer,
+       private base64: Base64,
+       private sanitizer: DomSanitizer,
        //public events: Events
     ) { 
    this.productForm = this.fb.group({
@@ -84,8 +94,8 @@ minTime:any='';
         this.userId=this.userDetails.response_data.id;
         }
         });
-        //this.clientID = this.route.snapshot.paramMap.get('clientName');
-       // console.log(this.clientID);
+        this.stindex = this.route.snapshot.paramMap.get('index');
+        this.isToggled = false;
       
       
    }
@@ -97,19 +107,13 @@ minTime:any='';
   //  this.storage.clear();s
   }
   ionViewWillEnter(){
-  
+  this.reloadDepositData();
 this.getLocation();
   }
  onlyNumberKey(event:any) {
     return (event.charCode == 8 || event.charCode == 0) ? null : event.charCode >= 48 && event.charCode <= 57;
 }
-setMainTime(){
- // console.log(this.start_time);
-  let tm=this.datePipe.transform(this.start_time, 'HH:mm');
-  console.log(tm);
-  this.start_timenw = moment(tm, "HH:mm").add(1, 'minutes').format('HH:mm');
-//console.log(this.start_timenw)
-}
+
 importFile(event,index) {
   console.log(event);
     if (event.target.files && event.target.files.length > 0) {
@@ -178,23 +182,25 @@ else{
 				category : this.category,
         expense_amount : this.expense_amount,
 				work_description : this.work_description,
+        depositImage:this.depositImage,
+        address:this.address,
 			
 			};
       //console.log(this.end_time);
 
-			let toBeUpload = [];
+			let toBeUpload:any = '';
 
 			await this.storage.forEach( (value, key, index) => {
 				if(key == 'attendenceExpense'){
-					value.forEach(element => {
-						toBeUpload.push(element);
-           // toBeUpload.push(this.storage.get('attendenceData2'));
-					});
+				
+            toBeUpload=value;
+            toBeUpload[this.stindex] = localarray;
+				
 				}
 			});
 			
       
-			toBeUpload.push(localarray);
+			
      
       	this.storage.set("attendenceExpense",toBeUpload).then((r) => {
          
@@ -204,6 +210,58 @@ else{
     }
 		
 	}
+  async reloadDepositData(){
+    //let d
+	await this.storage.forEach( (value, key, index) => {
+      if(key == 'attendenceExpense'){
+              
+        value.forEach((element,index) => {
+      if(index==this.stindex){
+      
+        this.project=element.project;
+        this.category=element.category;
+        this.expense_amount=element.expense_amount;
+      
+        this.work_description=element.work_description;
+        this.depositImage=element.depositImage;
+        this.address=element.address;
+        //console.log(element.mintime);
+      }
+     
+      });
+      }
+		 
+     
+	  });
+
+  } 
+  deposit_slip_image(){
+		let options: CameraOptions = {
+			quality: 20,
+			targetWidth: 768,
+			targetHeight: 1360,
+ 			// allowEdit: true,
+ 			destinationType: this.camera.DestinationType.FILE_URI,
+			sourceType: this.camera.PictureSourceType.CAMERA,
+			encodingType: this.camera.EncodingType.JPEG,
+ 			mediaType: this.camera.MediaType.PICTURE
+ 		};
+ 		this.camera.getPicture(options).then(imageData => {
+			
+			this.base64.encodeFile(imageData).then((base64File: string) => {
+				this.depositImage = base64File;
+				// this.form.controls.ddImage = this.ddImage;				
+			}, (err) => {
+			//	this.showToastWithCloseButton("Image capture failed. Please try again.");
+			});
+
+ 		}, error => {
+ 			console.log('ERROR -> ' + JSON.stringify(error));
+ 		});
+	}
+  imageViewer(imageToView,text=''){
+    this.photoViewer.show(imageToView, text);
+  }
   getLocation(){
     this.geolocation.getCurrentPosition().then((resp) => {
       // resp.coords.latitude

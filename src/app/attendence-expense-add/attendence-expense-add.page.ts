@@ -16,6 +16,9 @@ import { DatePipe } from '@angular/common';
 import * as moment from 'moment';
 import { NativeGeocoder, NativeGeocoderResult, NativeGeocoderOptions } from '@ionic-native/native-geocoder/ngx';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
+import { Camera, CameraOptions } from '@ionic-native/camera/ngx';
+import { PhotoViewer } from '@ionic-native/photo-viewer/ngx';
+import { Base64 } from '@ionic-native/base64/ngx';
 declare var window: any;
 @Component({
   selector: 'app-attendence-expense-add',
@@ -63,6 +66,8 @@ export class AttendenceExpenseAddPage implements OnInit {
  address:any='';
  current_address:any='';
  expense_amount:any='';
+ depositImage:any = "";
+ isToggled: boolean;
  constructor(private http: HttpClient, public navCtrl: NavController,
     public storage: Storage,public loadingController: LoadingController,
     public alertController: AlertController,
@@ -71,6 +76,10 @@ export class AttendenceExpenseAddPage implements OnInit {
        private datePipe: DatePipe,
        public nativeGeocoder: NativeGeocoder, 
        public geolocation: Geolocation,
+       public camera: Camera,
+       private photoViewer: PhotoViewer,
+       private base64: Base64,
+       private sanitizer: DomSanitizer,
        //public events: Events
     ) { 
    this.productForm = this.fb.group({
@@ -85,7 +94,7 @@ export class AttendenceExpenseAddPage implements OnInit {
         });
         //this.clientID = this.route.snapshot.paramMap.get('clientName');
        // console.log(this.clientID);
-      
+       this.isToggled = false;
       
    }
 
@@ -177,6 +186,8 @@ else{
 				category : this.category,
         expense_amount : this.expense_amount,
 				work_description : this.work_description,
+        depositImage:this.depositImage,
+        address:this.address,
 			
 			};
       //console.log(this.end_time);
@@ -203,6 +214,33 @@ else{
     }
 		
 	}
+  deposit_slip_image(){
+		let options: CameraOptions = {
+			quality: 20,
+			targetWidth: 768,
+			targetHeight: 1360,
+ 			// allowEdit: true,
+ 			destinationType: this.camera.DestinationType.FILE_URI,
+			sourceType: this.camera.PictureSourceType.CAMERA,
+			encodingType: this.camera.EncodingType.JPEG,
+ 			mediaType: this.camera.MediaType.PICTURE
+ 		};
+ 		this.camera.getPicture(options).then(imageData => {
+			
+			this.base64.encodeFile(imageData).then((base64File: string) => {
+				this.depositImage = base64File;
+				// this.form.controls.ddImage = this.ddImage;				
+			}, (err) => {
+			//	this.showToastWithCloseButton("Image capture failed. Please try again.");
+			});
+
+ 		}, error => {
+ 			console.log('ERROR -> ' + JSON.stringify(error));
+ 		});
+	}
+  imageViewer(imageToView,text=''){
+    this.photoViewer.show(imageToView, text);
+  }
   getLocation(){
     this.geolocation.getCurrentPosition().then((resp) => {
       // resp.coords.latitude

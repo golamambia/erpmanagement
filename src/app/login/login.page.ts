@@ -59,15 +59,20 @@ const usernamealrt = await this.alertController.create({
 
  
 var headers = new HttpHeaders();
-// headers.append('Content-Type', 'application/json');
-//   headers.append('Accept', 'application/json');
+ headers.append('content-type', 'application/json; charset=utf-8');
+//console.log(headers);
+   //headers.append('Accept', 'application/json');
 
-//   headers.append('Access-Control-Allow-Origin', '*');
-//   headers.append('Access-Control-Allow-Credentials', 'true');
+// headers.append('Access-Control-Allow-Origin', '*');
 
-//   headers.append('GET', 'POST');
+// headers = headers.append('GET', 'POST');
 
- // headers.append('Authorization', 'Basic ' + base64.encode(username + ":" + password));
+//  headers.append('Authorization', 'Basic ' + base64.encode(username + ":" + password));
+//  headers = headers.append("Access-Control-Allow-Origin", "*");
+//  headers = headers.append("Access-Control-Allow-Credentials", "true");
+// headers = headers.append("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
+// headers = headers.append("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers");
+
 	if(this.email == '' || this.email == null){
 		 
 		loading.dismiss();
@@ -85,13 +90,14 @@ var headers = new HttpHeaders();
     //this.password
 	}
 
-	this.http.post(host+'login', data, { headers: headers })
+	this.http.post(host+'login', JSON.stringify(data), { headers: headers })
 	.subscribe(res => {
 		
 		this.res = res;
-    console.log(this.res);
+    console.log(res);
+    loading.dismiss();
 		if(this.res.status == 0){
-		loading.dismiss();
+
 		this.alertController.create({
       
       message: this.res.message,

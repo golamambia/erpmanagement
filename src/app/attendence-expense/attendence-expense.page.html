@@ -17,7 +17,18 @@
             <h3>Create your account!</h3>
           </div> -->
           <ion-grid>
-            <ion-item-divider  color="light">Today : <div> {{today |  date: ' dd-MM-yyyy'}}</div></ion-item-divider>
+             <ion-row>
+              <ion-col size="6">
+               <ion-item-divider  color="light">Today : <div> {{today |  date: ' dd-MM-yyyy'}}</div></ion-item-divider>
+                </ion-col>
+                <ion-col size="6">
+                  
+                  <ion-button size="small" color="primary" (click)="gotorequestpage()">All Expense List</ion-button>
+                </ion-col>
+
+
+                </ion-row>
+            
             <ion-row class="margin">
               <ion-col size="12">
                 <div *ngFor="let inneritem of depositData; let i = index">
@@ -53,10 +64,10 @@
               </ion-col>
             </ion-row>
           </ion-grid>
-          <div padding *ngIf="depositData">
-            <ion-button  size="large"   expand="block">Submit</ion-button>
+          <div padding *ngIf="depositData.length" >
+            <ion-button  size="large" (click)="submit()"  expand="block">Submit</ion-button>
           </div>
-          <div padding *ngIf="!depositData">
+          <div padding *ngIf="!depositData.length">
             <ion-button  size="large"  [disabled]="true"  expand="block">Submit</ion-button>
           </div>
         </ion-col>

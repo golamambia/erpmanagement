@@ -199,18 +199,7 @@ importFile(event,index) {
   ionViewDidEnter(){
   //  this.storage.clear();
     this.reloadDepositData();
-  //   var parsedServerOutTime = moment('10:30', "hh:mm");
-  //   var parsedServerInTime = moment('14:30', "hh:mm");
-    
-  //   var milliseconds= parsedServerInTime.diff(parsedServerOutTime)/ 1000;
-  //  // let  hh=moment(milliseconds).format('HH:mm');
-   
-  //  // var display = moment({}).seconds(milliseconds).format("h:mm");
   
-  //   let hours   = Math.floor(milliseconds / 3600); // get hours
-  //   let minutes = Math.floor((milliseconds - (hours * 3600)) / 60); // get minutes
-  //   //let seconds = milliseconds - (hours * 3600) - (minutes * 60);
-  //   console.log(hours+':'+minutes);
     
   }
 
@@ -225,9 +214,7 @@ importFile(event,index) {
         value.forEach(element => {
         var parsedServerOutTime = moment(element.end_time24, "HH:mm");
     var parsedServerInTime = moment(element.start_time24, "HH:mm");
-    //console.log(element.start_time24+'-'+element.end_time24);
-    //console.log(parsedServerOutTime.diff(parsedServerInTime)/ 60000);
-    //console.log(parsedServerInTime+'- '+parsedServerOutTime);
+   
      milliseconds += parsedServerOutTime.diff(parsedServerInTime)/ 1000;
       lngth +=1;
       if(value.length==lngth){

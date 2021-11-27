@@ -16,6 +16,10 @@ import { DatePipe } from '@angular/common';
 import * as moment from 'moment';
 import { NativeGeocoder, NativeGeocoderResult, NativeGeocoderOptions } from '@ionic-native/native-geocoder/ngx';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
+import { Camera, CameraOptions } from '@ionic-native/camera/ngx';
+import { PhotoViewer } from '@ionic-native/photo-viewer/ngx';
+import { Base64 } from '@ionic-native/base64/ngx';
+
 declare var window: any;
 
 @Component({
@@ -65,7 +69,7 @@ export class AttendenceSingleEditPage implements OnInit {
  current_address:any='';
  stindex:any='';
  attendenceData:any='';
-
+ depositImage:any = "";
  constructor(private http: HttpClient, public navCtrl: NavController,
     public storage: Storage,public loadingController: LoadingController,
     public alertController: AlertController,
@@ -74,6 +78,10 @@ export class AttendenceSingleEditPage implements OnInit {
        private datePipe: DatePipe,
        public nativeGeocoder: NativeGeocoder, 
        public geolocation: Geolocation,
+       public camera: Camera,
+       private photoViewer: PhotoViewer,
+       private base64: Base64,
+       private sanitizer: DomSanitizer,
        //public events: Events
     ) { 
    this.productForm = this.fb.group({
@@ -98,20 +106,7 @@ export class AttendenceSingleEditPage implements OnInit {
   //  this.storage.clear();s
   }
   ionViewWillEnter(){
-  //   this.storage.get("mintime").then((val) => {
-  //     if(val){
-  //      let tm=this.datePipe.transform(val, 'HH:mm');
-  //      this.newminTime = moment(tm, "hh:mm").add(1, 'minutes').format('hh:mm'); 
-  //      this.minTime=tm;
-  //     // this.start_timenw =moment(tm, "hh:mm").add(1, 'minutes').format('hh:mm'); 
-  //      //moment(tm, "hh:mm").add(1, 'minutes').format('hh:mm');;
-  //  //console.log( this.newminTime);
-  //     }else{
-  //      this.minTime='09:30';
-  //      this.newminTime ='09:31';
-  //     // this.start_timenw ='09:31';
-  //     }
-  //      });
+ 
   this.minTime='09:30';
 this.getLocation();
 this.reloadDepositData();
@@ -205,33 +200,63 @@ else{
 				end_time : this.datePipe.transform(this.end_time, 'hh:mm'),
         start_time24 :this.datePipe.transform(this.start_time, 'HH:mm'),
 				end_time24 : this.datePipe.transform(this.end_time, 'HH:mm'),
+        start_timef :this.start_time,
+				end_timef : this.end_time,
 				work_description : this.work_description,
+        mintime : this.end_time,
+        depositImage:this.depositImage,
+        address:this.address,
 			
 			};
       //console.log(this.end_time);
 
-			let toBeUpload = [];
+			let toBeUpload:any ='';
 
 			await this.storage.forEach( (value, key, index) => {
 				if(key == 'attendenceData'){
-					value.forEach(element => {
-						toBeUpload.push(element);
-           // toBeUpload.push(this.storage.get('attendenceData2'));
-					});
+          toBeUpload=value;
+          toBeUpload[this.stindex] = localarray;
+					
 				}
 			});
 			
-      
-			toBeUpload.push(localarray);
-     
+      //console.log(toBeUpload);
+		
       	this.storage.set("attendenceData",toBeUpload).then((r) => {
-          this.storage.set("mintime",this.end_time);
+          //this.storage.set("mintime",this.end_time);
 					this.navCtrl.back();
 			});
 
     }
 		
 	}
+  deposit_slip_image(){
+		let options: CameraOptions = {
+			quality: 20,
+			targetWidth: 768,
+			targetHeight: 1360,
+ 			// allowEdit: true,
+ 			destinationType: this.camera.DestinationType.FILE_URI,
+			sourceType: this.camera.PictureSourceType.CAMERA,
+			encodingType: this.camera.EncodingType.JPEG,
+ 			mediaType: this.camera.MediaType.PICTURE
+ 		};
+ 		this.camera.getPicture(options).then(imageData => {
+			
+			this.base64.encodeFile(imageData).then((base64File: string) => {
+				this.depositImage = base64File;
+				// this.form.controls.ddImage = this.ddImage;				
+			}, (err) => {
+			//	this.showToastWithCloseButton("Image capture failed. Please try again.");
+			});
+
+ 		}, error => {
+ 			console.log('ERROR -> ' + JSON.stringify(error));
+ 		});
+	}
+  imageViewer(imageToView,text=''){
+    this.photoViewer.show(imageToView, text);
+  }
   async reloadDepositData(){
     //let d
 	await this.storage.forEach( (value, key, index) => {
@@ -240,7 +265,14 @@ else{
         value.forEach((element,index) => {
       if(index==this.stindex){
         this.attendenceData = element;
-       // console.log(element);
+        this.project=element.project;
+        this.category=element.category;
+        this.start_time=element.start_timef;
+        this.end_time=element.end_timef;
+        this.work_description=element.work_description;
+        this.depositImage=element.depositImage;
+        this.address=element.address;
+        //console.log(element.mintime);
       }
      
       });

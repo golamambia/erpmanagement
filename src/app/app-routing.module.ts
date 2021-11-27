@@ -58,6 +58,38 @@ const routes: Routes = [
   {
     path: 'attendence-expense-add',
     loadChildren: () => import('./attendence-expense-add/attendence-expense-add.module').then( m => m.AttendenceExpenseAddPageModule)
+  },
+  {
+    path: 'attendence-b',
+    loadChildren: () => import('./attendence-b/attendence-b.module').then( m => m.AttendenceBPageModule)
+  },
+  {
+    path: 'attendence-b-edit',
+    loadChildren: () => import('./attendence-b-edit/attendence-b-edit.module').then( m => m.AttendenceBEditPageModule)
+  },
+  {
+    path: 'attendence-b-add',
+    loadChildren: () => import('./attendence-b-add/attendence-b-add.module').then( m => m.AttendenceBAddPageModule)
+  },
+  {
+    path: 'attendence-b-update',
+    loadChildren: () => import('./attendence-b-update/attendence-b-update.module').then( m => m.AttendenceBUpdatePageModule)
+  },
+  {
+    path: 'wallet-page',
+    loadChildren: () => import('./wallet-page/wallet-page.module').then( m => m.WalletPagePageModule)
+  },
+  {
+    path: 'return-request',
+    loadChildren: () => import('./return-request/return-request.module').then( m => m.ReturnRequestPageModule)
+  },
+  {
+    path: 'return-request-create',
+    loadChildren: () => import('./return-request-create/return-request-create.module').then( m => m.ReturnRequestCreatePageModule)
+  },
+  {
+    path: 'workexpense-list',
+    loadChildren: () => import('./workexpense-list/workexpense-list.module').then( m => m.WorkexpenseListPageModule)
   }
 ];
 
