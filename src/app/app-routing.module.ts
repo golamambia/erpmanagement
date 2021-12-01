@@ -90,6 +90,14 @@ const routes: Routes = [
   {
     path: 'workexpense-list',
     loadChildren: () => import('./workexpense-list/workexpense-list.module').then( m => m.WorkexpenseListPageModule)
+  },
+  {
+    path: 'user-attendense-list',
+    loadChildren: () => import('./user-attendense-list/user-attendense-list.module').then( m => m.UserAttendenseListPageModule)
+  },
+  {
+    path: 'workexpense-edit',
+    loadChildren: () => import('./workexpense-edit/workexpense-edit.module').then( m => m.WorkexpenseEditPageModule)
   }
 ];
 

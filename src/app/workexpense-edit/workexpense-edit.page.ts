@@ -24,11 +24,12 @@ import * as _ from 'lodash';
 declare var window: any;
 
 @Component({
-  selector: 'app-attendence-expense-edit',
-  templateUrl: './attendence-expense-edit.page.html',
-  styleUrls: ['./attendence-expense-edit.page.scss'],
+  selector: 'app-workexpense-edit',
+  templateUrl: './workexpense-edit.page.html',
+  styleUrls: ['./workexpense-edit.page.scss'],
 })
-export class AttendenceExpenseEditPage implements OnInit {
+export class WorkexpenseEditPage implements OnInit {
+
 minTime:any='';
   maxTime:any= '18:30';
   newminTime:any='';
@@ -71,6 +72,7 @@ minTime:any='';
  expense_amount:any='';
  stindex:any='';
  depositImage:any = "";
+  depositImage2:any = "";
  isToggled: boolean;
  projecy_list:any="";
  category_list:any='';
@@ -100,12 +102,13 @@ minTime:any='';
    this.storage.get("userDetails").then(val=>{
       if(val){
         this.userDetails = val;
-        this.userId=this.userDetails.response_data.id;
+       // this.userId=this.userDetails.response_data.id;
         }
         });
-        this.stindex = this.route.snapshot.paramMap.get('index');
+        this.stindex = this.route.snapshot.paramMap.get('id');
         this.isToggled = false;
-      
+        this.getprojectList();
+        this.getcategoryList();
       
    }
 
@@ -116,8 +119,7 @@ minTime:any='';
   //  this.storage.clear();s
   }
   ionViewWillEnter(){
-    this.getprojectList();
-    this.getcategoryList();
+   
   this.reloadDepositData();
 this.getLocation();
   }
@@ -147,7 +149,13 @@ importFile(event,index) {
   }
 
   async submit_mode(){
-	
+	const loading = await this.loadingController.create({
+        message: ''
+      });
+      
+         
+      var headers = new HttpHeaders();
+      headers.append('content-type', 'application/json; charset=utf-8');
 if(!this.project){
   this.alertController.create({
     message:'Please select project',
@@ -196,45 +204,55 @@ if(!this.project){
 }
 else{
 
-
-  var splitted = this.getDropDownText2(this.project, this.projecy_list); 
-  var splitted2 = this.getDropDownTextsub(this.subcategory, this.subcategory_list); 
-  //console.log(splitted)
-  let localarray = {
-    projectid : splitted[0].sub_project_id,
-    project : this.project,
-    project_full : this.project,
-    project_text :splitted[0].project_id+' > '+splitted[0].sub_project_id,
-    category : this.category,
-    category_text : this.category_text,
-    subcategory : this.subcategory,
-    subcategory_text : splitted2[0].ec_name,
-        expense_amount : this.expense_amount,
-				work_description : this.work_description,
-        depositImage:this.depositImage,
-        address:this.address,
+	  await loading.present();
+			let localarray = {
+				"userid": 3,
+				"id":this.stindex,
+				"project" : this.project,
+        "projectid" : this.project,
+				"category" : this.category,
+        "subcategory" : this.subcategory,
+        		"expense_amount" : this.expense_amount,
+				"work_description" : this.work_description,
+        		"depositImage2":this.depositImage2,
+        //"address":this.address,
 			
 			};
       //console.log(this.end_time);
 
-			let toBeUpload:any = '';
+			this.http.post(host+'user-work-expense-postbyid', JSON.stringify(localarray),{ headers: headers })
+      .subscribe((res:any) => {
+       // console.log(res);
+       loading.dismiss();
+      if(res.status == true){
+            
+       this.alertController.create({
+         message: 'Successfully updated',
+          buttons: ['OK']
+        }).then(resalert => {
+    
+          resalert.present();
+    
+        });
+        }else{
 
-			await this.storage.forEach( (value, key, index) => {
-				if(key == 'attendenceExpense'){
-				
-            toBeUpload=value;
-            toBeUpload[this.stindex] = localarray;
-				
-				}
-			});
-			
-      
+        this.alertController.create({
+         message: 'Something went wrong',
+          buttons: ['OK']
+        }).then(resalert => {
+    
+          resalert.present();
+    
+        });
+        loading.dismiss();
+        }
+      }, (err) => {
+        //console.log(err);
+        loading.dismiss();
+      });     
 			
      
-      	this.storage.set("attendenceExpense",toBeUpload).then((r) => {
-         
-					this.navCtrl.back();
-			});
+      
 
     }
 		
@@ -262,7 +280,7 @@ else{
       }
       this.http.post(host+'user-project-get', JSON.stringify(data),{ headers: headers })
       .subscribe((res:any) => {
-        //console.log(res);
+        console.log(res);
        loading.dismiss();
       if(res.status == true){
        
@@ -427,7 +445,60 @@ selectChangesub(id) {
   
 }
 
-  async reloadDepositData(){
+	 async reloadDepositData(){
+ 
+    //console.log(this.subject_name);
+    
+    const loading = await this.loadingController.create({
+        message: ''
+      });
+      
+         
+      var headers = new HttpHeaders();
+      headers.append('content-type', 'application/json; charset=utf-8');
+   
+      var data ={
+        
+        "userid": 3,
+        "id":this.stindex,
+        //this.password
+      }
+      this.http.post(host+'user-work-expense-getbyid', JSON.stringify(data),{ headers: headers })
+      .subscribe((res:any) => {
+       // console.log(res);
+       loading.dismiss();
+      if(res.status == true){
+        this.project=res.response_data[0].uwe_project;
+        this.category=res.response_data[0].uwe_category;
+        this.subcategory=res.response_data[0].uwe_subcategory;
+        this.expense_amount=res.response_data[0].uwe_amount;
+      
+        this.work_description=res.response_data[0].uwe_description;
+        this.depositImage=res.response_data[0].uwe_image;
+        this.address=res.response_data[0].uwe_locationin;       
+       
+        }else{
+
+        this.alertController.create({
+         message: 'Something went wrong',
+          buttons: ['OK']
+        }).then(resalert => {
+    
+          resalert.present();
+    
+        });
+        loading.dismiss();
+        }
+      }, (err) => {
+        //console.log(err);
+        loading.dismiss();
+      });
+    
+    
+    
+
+} 
+  async reloadDepositData2(){
     //let d
 	await this.storage.forEach( (value, key, index) => {
       if(key == 'attendenceExpense'){
@@ -436,17 +507,13 @@ selectChangesub(id) {
       if(index==this.stindex){
       
         this.project=element.project;
-        this.project_text=element.project_text;
         this.category=element.category;
-        this.category_text=element.category_text;
-        this.subcategory=element.subcategory;
-        this.subcategory_text=element.subcategory_text;
         this.expense_amount=element.expense_amount;
       
         this.work_description=element.work_description;
         this.depositImage=element.depositImage;
         this.address=element.address;
-        //console.log(element.subcategory_text);
+        //console.log(element.mintime);
       }
      
       });
@@ -471,6 +538,7 @@ selectChangesub(id) {
 			
 			this.base64.encodeFile(imageData).then((base64File: string) => {
 				this.depositImage = base64File;
+				this.depositImage2 = base64File;
 				// this.form.controls.ddImage = this.ddImage;				
 			}, (err) => {
 			//	this.showToastWithCloseButton("Image capture failed. Please try again.");
@@ -504,5 +572,4 @@ selectChangesub(id) {
        console.log('Error getting location', error);
      });
   }
-
 }

@@ -69,7 +69,9 @@ export class ReturnRequestCreatePage implements OnInit {
  depositImage:any = "";
  isToggled: boolean;
  total_amount:any=0;
-
+ uw_mode:any='';
+ uw_txnno:any='';
+ modelist:any='';
  constructor(private http: HttpClient, public navCtrl: NavController,
     public storage: Storage,public loadingController: LoadingController,
     public alertController: AlertController,
@@ -91,7 +93,7 @@ export class ReturnRequestCreatePage implements OnInit {
    this.storage.get("userDetails").then(val=>{
       if(val){
         this.userDetails = val;
-        this.userId=this.userDetails.response_data.id;
+        //this.userId=this.userDetails.response_data.id;
         }
         });
         //this.clientID = this.route.snapshot.paramMap.get('clientName');
@@ -107,7 +109,7 @@ export class ReturnRequestCreatePage implements OnInit {
   //  this.storage.clear();s
   }
   ionViewWillEnter(){
-  
+  this.getcashMode();
 this.getAmount();
   }
  onlyNumberKey(event:any) {
@@ -140,6 +142,57 @@ importFile(event,index) {
     }
 
   }
+  async getcashMode(){
+ 
+    //console.log(this.subject_name);
+    
+    const loading = await this.loadingController.create({
+        message: ''
+      });
+      
+         
+      var headers = new HttpHeaders();
+      headers.append('content-type', 'application/json; charset=utf-8');
+    //this.submitted = true;
+    
+      // await loading.present();
+      //var data ={}
+      var data ={
+        
+        "userid": 3,
+        
+        //this.password
+      }
+      this.http.post(host+'cash-mode-get', JSON.stringify(data),{ headers: headers })
+      .subscribe((res:any) => {
+        console.log(res);
+       loading.dismiss();
+      if(res.status == true){
+       
+         this.modelist=res.response_data;
+                 
+       
+        }else{
+
+        this.alertController.create({
+         message: 'Something went wrong',
+          buttons: ['OK']
+        }).then(resalert => {
+    
+          resalert.present();
+    
+        });
+        loading.dismiss();
+        }
+      }, (err) => {
+        //console.log(err);
+        loading.dismiss();
+      });
+    
+    
+    
+
+} 
 
   async submit_mode(){
     const loading = await this.loadingController.create({
@@ -159,9 +212,27 @@ importFile(event,index) {
      resalert.present();
 
    });
+}else if(this.uw_mode>1 && !this.uw_txnno){
+  this.alertController.create({
+    message:'Please enter txn no',
+     buttons: ['OK']
+   }).then(resalert => {
+
+     resalert.present();
+
+   });
 }else if(!this.work_description){
   this.alertController.create({
     message:'Please enter description',
+     buttons: ['OK']
+   }).then(resalert => {
+
+     resalert.present();
+
+   });
+}else if(this.uw_mode>1 && !this.depositImage){
+  this.alertController.create({
+    message:'Please select image',
      buttons: ['OK']
    }).then(resalert => {
 
@@ -187,7 +258,9 @@ else{
         uw_amount : this.expense_amount,
 				uw_description : this.work_description,
         userId:3,
-      
+        uw_mode : this.uw_mode,
+        uw_txnno : this.uw_txnno,
+        depositImage:this.depositImage,
 			};
       this.http.post(host+'user-returnrequest-create', JSON.stringify(data),{ headers: headers })
       .subscribe((res:any) => {
@@ -320,6 +393,9 @@ else{
      }).catch((error) => {
        console.log('Error getting location', error);
      });
+  }
+  getModeval(val){
+//console.log(val);
   }
 
 }

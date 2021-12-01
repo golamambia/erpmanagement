@@ -17,24 +17,30 @@
             <h3>Create your account!</h3>
           </div> -->
           <div padding>
-           <ion-item>
+            <ion-item>
     
-<ion-label position="stacked">Project</ion-label>
-    <ion-select placeholder="Select project" [(ngModel)]="project" [ngModelOptions]="{standalone: true}">
-      <ion-select-option value="Project 1">Project 1</ion-select-option>
-      <ion-select-option value="Project 2">Project 2</ion-select-option>
-      <ion-select-option value="Project 3">Project 3</ion-select-option>
-    </ion-select>
-  </ion-item> 
-  <ion-item>
-    
-<ion-label position="stacked">Expense category</ion-label>
-    <ion-select placeholder="Select category" [(ngModel)]="category" [ngModelOptions]="{standalone: true}">
-      <ion-select-option value="Travelling">Travelling</ion-select-option>
-      <ion-select-option value="Fooding">Fooding</ion-select-option>
-      <ion-select-option value="Others">Others</ion-select-option>
-    </ion-select>
-  </ion-item> 
+              <ion-label position="stacked">Project</ion-label>
+                  <ion-select interface="popover" placeholder={{project_text}} [(ngModel)]="project" [ngModelOptions]="{standalone: true}">
+                    <ion-select-option *ngFor="let val of projecy_list; let i = index" value="{{val.ID}}">{{val.project_id}} > {{val.sub_project_id}}</ion-select-option>
+                  </ion-select>
+                </ion-item> 
+                <ion-item>
+                  
+              <ion-label position="stacked">Expense category</ion-label>
+              <ion-select #C (ionChange)="selectChange(C.value)" interface="popover" placeholder={{category_text}} [(ngModel)]="category" [ngModelOptions]="{standalone: true}">
+                <ion-select-option *ngFor="let val of category_list; let i = index" value="{{val.ec_ID}}">{{val.ec_name}}</ion-select-option>
+                 
+              </ion-select>
+                </ion-item> 
+              
+                <ion-item >
+                  
+                  <ion-label position="stacked">Type</ion-label>
+                  <ion-select #C (ionChange)="selectChangesub(C.value)" interface="popover" placeholder={{subcategory_text}} [(ngModel)]="subcategory" [ngModelOptions]="{standalone: true}">
+                    <ion-select-option *ngFor="let val of subcategory_list; let i = index" value="{{val.ec_ID}}">{{val.ec_name}}</ion-select-option>
+                     
+                  </ion-select>
+                    </ion-item>
 
   <ion-item>
   <ion-label position="floating">Description</ion-label>

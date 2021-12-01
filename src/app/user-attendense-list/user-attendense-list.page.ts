@@ -13,13 +13,12 @@ import { image_path } from '../../environments/environment';
 import { FormBuilder, FormArray, FormGroup, Validators } from '@angular/forms';
 import * as moment from 'moment';
 import { DatePipe } from '@angular/common';
-
 @Component({
-  selector: 'app-return-request',
-  templateUrl: './return-request.page.html',
-  styleUrls: ['./return-request.page.scss'],
+  selector: 'app-user-attendense-list',
+  templateUrl: './user-attendense-list.page.html',
+  styleUrls: ['./user-attendense-list.page.scss'],
 })
-export class ReturnRequestPage implements OnInit {
+export class UserAttendenseListPage implements OnInit {
   minTime:any='';
   maxTime:any= '18:30';
   newminTime:any='';
@@ -118,7 +117,7 @@ export class ReturnRequestPage implements OnInit {
           
           //this.password
         }
-        this.http.post(host+'user-returnrequest-get', JSON.stringify(data),{ headers: headers })
+        this.http.post(host+'user-attendence-get', JSON.stringify(data),{ headers: headers })
         .subscribe((res:any) => {
          // console.log(res);
          loading.dismiss();
@@ -151,7 +150,7 @@ export class ReturnRequestPage implements OnInit {
 
   } 
   gotorequestpage(){
-    this.navCtrl.navigateForward(['/return-request-create', {
+    this.navCtrl.navigateForward(['/return-request', {
      // clientName: 'test',
      
     }]);
@@ -162,61 +161,7 @@ export class ReturnRequestPage implements OnInit {
       index: i, 
     }]);
   }
-  async remove_attendence(id){
-    
-    const alert = await this.alertController.create({
-     
-      message: 'Are you sure to delete',
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel',
-          cssClass: 'secondary',
-          handler: (blah) => {
-            //console.log('Confirm Cancel: blah');
-          }
-        }, {
-          text: 'Okay',
-          handler: () => {
-            //console.log('Confirm Okay');
-          	 this.storage.forEach( (value, key, index) => {
-              if(key == 'attendenceData'){
-             
-                value.forEach((val, key) => {
-                 
-                  if(key == id){
-                 
-                    this.depositData.splice(key, 1);
-                    this.storage.remove(key).then((r) => {
-                      if(id==0){
-                        this.storage.set("mintime",'');
-                       
-                      }else{
-                        value.forEach((val2, key2) => {
-                        if(key2==(id-1)){
-                          //console.log(val2.mintime);
-                          this.storage.set("mintime",val2.mintime);
-                        }
-                      });
-                      }
-                      this.storage.set('attendenceData', this.depositData).then((r) => {;
-                      this.reloadDepositData();
-                     // this.storage.set("mintime",'06:30');
-                    });
-                    });
-                  }
-                });
-              }
-             
-             
-            });
-            
-          }
-        }
-      ]
-    });
 
-    await alert.present();
 
-  } 
+
 }

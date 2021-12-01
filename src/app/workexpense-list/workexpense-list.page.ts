@@ -73,7 +73,7 @@ export class WorkexpenseListPage implements OnInit {
    this.storage.get("userDetails").then(val=>{
       if(val){
         this.userDetails = val;
-        this.userId=this.userDetails.response_data.id;
+       // this.userId=this.userDetails.response_data.id;
         }
         });
    }
@@ -156,7 +156,11 @@ export class WorkexpenseListPage implements OnInit {
      
     }]);
   }
-
+  edit_expense(id){
+    this.navCtrl.navigateForward(['/workexpense-edit', {
+      id: id, 
+    }]);
+  }
   edit_attendence(i,data){
     this.navCtrl.navigateForward(['/attendence-single-edit', {
       index: i, 
@@ -219,6 +223,79 @@ export class WorkexpenseListPage implements OnInit {
     await alert.present();
 
   } 
+  async remove_expense(id){
+    const loading = await this.loadingController.create({
+      message: ''
+    });
+    
+       
+    var headers = new HttpHeaders();
+    headers.append('content-type', 'application/json; charset=utf-8');
+    const alert = await this.alertController.create({
+     
+      message: 'Are you sure to delete',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'secondary',
+          handler: (blah) => {
+            //console.log('Confirm Cancel: blah');
+          }
+        }, {
+          text: 'Okay',
+          handler: () => {
+            //console.log('Confirm Okay');
+             loading.present();
+            let localarray = {
+              "userid": 3,
+              "id":id,
+              
+              //"address":this.address,
+            
+            };
+            //console.log(this.end_time);
+      
+            this.http.post(host+'user-work-expense-deletebyid', JSON.stringify(localarray),{ headers: headers })
+            .subscribe((res:any) => {
+             // console.log(res);
+             loading.dismiss();
+            if(res.status == true){
+              this.reloadDepositData();
+             this.alertController.create({
+             
+               message: 'Successfully deleted',
+                buttons: ['OK']
+              }).then(resalert => {
+          
+                resalert.present();
+          
+              });
+              }else{
+      
+              this.alertController.create({
+               message: 'Something went wrong',
+                buttons: ['OK']
+              }).then(resalert => {
+          
+                resalert.present();
+          
+              });
+              loading.dismiss();
+              }
+            }, (err) => {
+              //console.log(err);
+              loading.dismiss();
+            });     
+            
+            
+          }
+        }
+      ]
+    });
 
+    await alert.present();
+
+  }
 
 }

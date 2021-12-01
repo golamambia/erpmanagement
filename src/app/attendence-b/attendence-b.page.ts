@@ -74,7 +74,7 @@ export class AttendenceBPage implements OnInit {
    this.storage.get("userDetails").then(val=>{
       if(val){
         this.userDetails = val;
-        this.userId=this.userDetails.response_data.id;
+       // this.userId=this.userDetails.response_data.id;
         }
         });
         
@@ -185,6 +185,12 @@ importFile(event,index) {
     this.reloadDepositData();
   
     
+  }
+  gotorequestpage(){
+    this.navCtrl.navigateForward(['/user-attendense-list', {
+     // clientName: 'test',
+     
+    }]);
   }
   async  checkin_check(){
     await this.storage.get("checkin").then((val) => {

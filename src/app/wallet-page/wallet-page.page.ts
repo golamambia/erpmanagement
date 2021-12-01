@@ -72,7 +72,7 @@ export class WalletPagePage implements OnInit {
    this.storage.get("userDetails").then(val=>{
       if(val){
         this.userDetails = val;
-        this.userId=this.userDetails.response_data.id;
+       // this.userId=this.userDetails.response_data.id;
         }
         });
    }

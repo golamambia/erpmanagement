@@ -20,6 +20,8 @@ import { Camera, CameraOptions } from '@ionic-native/camera/ngx';
 import { PhotoViewer } from '@ionic-native/photo-viewer/ngx';
 import { Base64 } from '@ionic-native/base64/ngx';
 
+import { Injectable } from '@angular/core';
+import * as _ from 'lodash';
 @Component({
   selector: 'app-attendence-b-add',
   templateUrl: './attendence-b-add.page.html',
@@ -56,6 +58,7 @@ export class AttendenceBAddPage implements OnInit {
  res:any;
  project:any;
  category:any='';
+
  start_time:any=new Date().toISOString();
  start_timenw:any='';
  end_time:any='';
@@ -68,6 +71,10 @@ export class AttendenceBAddPage implements OnInit {
  current_address:any='';
  depositImage:any = "";
  isToggled: boolean;
+ projecy_list:any='';
+ category_list:any='';
+ project_text:any='';
+ category_text:any='';
  constructor(private http: HttpClient, public navCtrl: NavController,
     public storage: Storage,public loadingController: LoadingController,
     public alertController: AlertController,
@@ -89,7 +96,7 @@ export class AttendenceBAddPage implements OnInit {
    this.storage.get("userDetails").then(val=>{
       if(val){
         this.userDetails = val;
-        this.userId=this.userDetails.response_data.id;
+       // this.userId=this.userDetails.response_data.id;
         }
         });
         //this.clientID = this.route.snapshot.paramMap.get('clientName');
@@ -105,7 +112,8 @@ export class AttendenceBAddPage implements OnInit {
   //  this.storage.clear();s
   }
   ionViewWillEnter(){
-   
+   this.getprojectList();
+   this.getcategoryList();
 this.getLocation();
   }
  onlyNumberKey(event:any) {
@@ -165,10 +173,15 @@ if(!this.project){
 }
 else{
 
-
+      var splitted = this.getDropDownText2(this.project, this.projecy_list); 
+      //console.log(splitted)
 			let localarray = {
+        projectid : splitted[0].sub_project_id,
 				project : this.project,
+        project_full : this.project,
+        project_text :splitted[0].project_id+' > '+splitted[0].sub_project_id,
 				category : this.category,
+        category_text : this.category_text,
 				start_time :this.datePipe.transform(this.start_time, 'hh:mm'),
         end_time :'',
         start_time24 :this.datePipe.transform(this.start_time, 'HH:mm'),
@@ -232,6 +245,108 @@ else{
   imageViewer(imageToView,text=''){
     this.photoViewer.show(imageToView, text);
   }
+  async getprojectList(){
+ 
+    //console.log(this.subject_name);
+    
+    const loading = await this.loadingController.create({
+        message: ''
+      });
+      
+         
+      var headers = new HttpHeaders();
+      headers.append('content-type', 'application/json; charset=utf-8');
+    //this.submitted = true;
+    
+      // await loading.present();
+      //var data ={}
+      var data ={
+        
+        "userid": 3,
+        
+        //this.password
+      }
+      this.http.post(host+'user-project-get', JSON.stringify(data),{ headers: headers })
+      .subscribe((res:any) => {
+        //console.log(res);
+       loading.dismiss();
+      if(res.status == true){
+       
+         this.projecy_list=res.response_data;
+                 
+       
+        }else{
+
+        // this.alertController.create({
+        //  message: 'Something went wrong',
+        //   buttons: ['OK']
+        // }).then(resalert => {
+    
+        //   resalert.present();
+    
+        // });
+        loading.dismiss();
+        }
+      }, (err) => {
+        //console.log(err);
+        loading.dismiss();
+      });
+    
+    
+    
+
+} 
+async getcategoryList(){
+ 
+  //console.log(this.subject_name);
+  
+  const loading = await this.loadingController.create({
+      message: ''
+    });
+    
+       
+    var headers = new HttpHeaders();
+    headers.append('content-type', 'application/json; charset=utf-8');
+  //this.submitted = true;
+  
+    // await loading.present();
+    //var data ={}
+    var data ={
+      
+      "userid": 3,
+      
+      //this.password
+    }
+    this.http.post(host+'attendence-category-get', JSON.stringify(data),{ headers: headers })
+    .subscribe((res:any) => {
+      //console.log(res);
+     loading.dismiss();
+    if(res.status == true){
+     
+       this.category_list=res.response_data;
+               
+     
+      }else{
+
+      // this.alertController.create({
+      //  message: 'Something went wrong',
+      //   buttons: ['OK']
+      // }).then(resalert => {
+  
+      //   resalert.present();
+  
+      // });
+      loading.dismiss();
+      }
+    }, (err) => {
+      //console.log(err);
+      loading.dismiss();
+    });
+  
+  
+  
+
+} 
   getLocation(){
     this.geolocation.getCurrentPosition().then((resp) => {
       // resp.coords.latitude
@@ -253,5 +368,25 @@ else{
        console.log('Error getting location', error);
      });
   }
+  getDropDownText2(id, object){
+    const selObj = _.filter(object, function (o) {
+        return (_.includes(id,o.ID));
+    });
+    return selObj;
+  
+  }
+getDropDownText(id, object){
+  const selObj = _.filter(object, function (o) {
+      return (_.includes(id,o.ac_ID));
+  });
+  return selObj;
+
+}
+selectChange(id) {
+
+  this.category_text = this.getDropDownText(id, this.category_list)[0].ac_name;
+ // console.log(this.category_text);
+  
+}
 
 }

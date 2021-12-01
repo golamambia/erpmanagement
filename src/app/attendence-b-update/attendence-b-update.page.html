@@ -20,20 +20,18 @@
            <ion-item>
     
 <ion-label position="stacked">Project</ion-label>
-    <ion-select  interface="popover"  placeholder="Select project" [(ngModel)]="project" [ngModelOptions]="{standalone: true}">
-       <ion-select-option value="Project 1">Project 1</ion-select-option>
-      <ion-select-option value="Project 2">Project 2</ion-select-option>
-      <ion-select-option value="Project 3">Project 3</ion-select-option>
+    <ion-select  interface="popover"   placeholder={{project_text}} [(ngModel)]="project" [ngModelOptions]="{standalone: true}">
+      <ion-select-option *ngFor="let val of projecy_list; let i = index" value="{{val.ID}}">{{val.project_id}} > {{val.sub_project_id}}</ion-select-option>
+         
     </ion-select>
   </ion-item> 
   <ion-item>
     
 <ion-label position="stacked">Attendance category</ion-label>
-    <ion-select interface="popover" placeholder="Select category" [(ngModel)]="category" [ngModelOptions]="{standalone: true}">
-      <ion-select-option value="Category 1">Category 1</ion-select-option>
-      <ion-select-option value="Category 2">Category 2</ion-select-option>
-      <ion-select-option value="Category 3">Category 3</ion-select-option>
-    </ion-select>
+<ion-select #C (ionChange)="selectChange(C.value)" interface="popover" placeholder={{category_text}} [(ngModel)]="category" [ngModelOptions]="{standalone: true}">
+  <ion-select-option *ngFor="let val of category_list; let i = index" value="{{val.ac_ID}}">{{val.ac_name}}</ion-select-option>
+   
+</ion-select>
   </ion-item> 
     <ion-item>
     

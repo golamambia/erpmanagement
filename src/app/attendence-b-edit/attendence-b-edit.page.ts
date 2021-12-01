@@ -19,6 +19,8 @@ import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { Camera, CameraOptions } from '@ionic-native/camera/ngx';
 import { PhotoViewer } from '@ionic-native/photo-viewer/ngx';
 import { Base64 } from '@ionic-native/base64/ngx';
+import { Injectable } from '@angular/core';
+import * as _ from 'lodash';
 @Component({
   selector: 'app-attendence-b-edit',
   templateUrl: './attendence-b-edit.page.html',
@@ -56,6 +58,7 @@ minTime:any='';
  res:any;
  project:any;
  category:any='';
+ category_text:any='';
  start_time:any='';
  start_timenw:any='';
  end_time:any=new Date().toISOString();
@@ -70,6 +73,11 @@ minTime:any='';
  isToggled: boolean;
  stindex:any='';
  attendenceData:any='';
+ projecy_list:any='';
+ category_list:any='';
+ project_text:any='';
+ projectid:any='';
+ project_full:any='';
  constructor(private http: HttpClient, public navCtrl: NavController,
     public storage: Storage,public loadingController: LoadingController,
     public alertController: AlertController,
@@ -91,7 +99,7 @@ minTime:any='';
    this.storage.get("userDetails").then(val=>{
       if(val){
         this.userDetails = val;
-        this.userId=this.userDetails.response_data.id;
+        //this.userId=this.userDetails.response_data.id;
         }
         });
         //this.clientID = this.route.snapshot.paramMap.get('clientName');
@@ -108,6 +116,8 @@ minTime:any='';
   //  this.storage.clear();s
   }
   ionViewWillEnter(){
+    this.getprojectList();
+   this.getcategoryList();
    this.reloadDepositData();
 //this.getLocation();
   }
@@ -118,16 +128,19 @@ minTime:any='';
               
         value.forEach((element,index) => {
       if(index==this.stindex){
-        this.attendenceData = element;
+        //this.attendenceData = element;
+        this.projectid=element.projectid;
         this.project=element.project;
+        this.project_text=element.project_text;
         this.category=element.category;
+        this.category_text=element.category_text,
         this.start_time=element.start_timef;
         //this.end_time=element.end_timef;
         this.work_description=element.work_description;
         this.depositImage=element.depositImage;
         this.address=element.address;
         
-        //console.log(element.mintime);
+       // console.log(element.project);
       }
      
       });
@@ -195,9 +208,15 @@ if(!this.project){
 else{
 
 
+  var splitted = this.getDropDownText2(this.project, this.projecy_list); 
+      //console.log(splitted)
 			let localarray = {
+        projectid : splitted[0].sub_project_id,
 				project : this.project,
+        project_full : this.project,
+        project_text :splitted[0].project_id+' > '+splitted[0].sub_project_id,
 				category : this.category,
+        category_text : this.category_text,
 				start_time :this.datePipe.transform(this.start_time, 'hh:mm'),
         end_time :this.datePipe.transform(this.end_time, 'hh:mm'),
         start_time24 :this.datePipe.transform(this.start_time, 'HH:mm'),
@@ -257,6 +276,127 @@ else{
   imageViewer(imageToView,text=''){
     this.photoViewer.show(imageToView, text);
   }
+
+
+async getprojectList(){
+ 
+  //console.log(this.subject_name);
+  
+  const loading = await this.loadingController.create({
+      message: ''
+    });
+    
+       
+    var headers = new HttpHeaders();
+    headers.append('content-type', 'application/json; charset=utf-8');
+  //this.submitted = true;
+  
+    // await loading.present();
+    //var data ={}
+    var data ={
+      
+      "userid": 3,
+      
+      //this.password
+    }
+    this.http.post(host+'user-project-get', JSON.stringify(data),{ headers: headers })
+    .subscribe((res:any) => {
+     // console.log(res);
+     loading.dismiss();
+    if(res.status == true){
+     
+       this.projecy_list=res.response_data;
+               
+     
+      }else{
+
+      // this.alertController.create({
+      //  message: 'Something went wrong',
+      //   buttons: ['OK']
+      // }).then(resalert => {
+  
+      //   resalert.present();
+  
+      // });
+      loading.dismiss();
+      }
+    }, (err) => {
+      //console.log(err);
+      loading.dismiss();
+    });
+  
+  
+  
+
+} 
+async getcategoryList(){
+
+//console.log(this.subject_name);
+
+const loading = await this.loadingController.create({
+    message: ''
+  });
+  
+     
+  var headers = new HttpHeaders();
+  headers.append('content-type', 'application/json; charset=utf-8');
+//this.submitted = true;
+
+  // await loading.present();
+  //var data ={}
+  var data ={
+    
+    "userid": 3,
+    
+    //this.password
+  }
+  this.http.post(host+'attendence-category-get', JSON.stringify(data),{ headers: headers })
+  .subscribe((res:any) => {
+    console.log(res);
+   loading.dismiss();
+  if(res.status == true){
+   
+     this.category_list=res.response_data;
+             
+   
+    }else{
+
+    // this.alertController.create({
+    //  message: 'Something went wrong',
+    //   buttons: ['OK']
+    // }).then(resalert => {
+
+    //   resalert.present();
+
+    // });
+    loading.dismiss();
+    }
+  }, (err) => {
+    //console.log(err);
+    loading.dismiss();
+  });
+
+} 
+getDropDownText2(id, object){
+  const selObj = _.filter(object, function (o) {
+      return (_.includes(id,o.ID));
+  });
+  return selObj;
+
+}
+getDropDownText(id, object){
+  const selObj = _.filter(object, function (o) {
+      return (_.includes(id,o.ac_ID));
+  });
+  return selObj;
+
+}
+selectChange() {
+
+this.category_text = this.getDropDownText(this.category, this.category_list)[0].ac_name;
+// console.log(this.category_text);
+
+}
   getLocation(){
     this.geolocation.getCurrentPosition().then((resp) => {
       // resp.coords.latitude
