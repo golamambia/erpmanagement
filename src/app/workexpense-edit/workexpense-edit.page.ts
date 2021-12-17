@@ -99,10 +99,10 @@ minTime:any='';
      
       quantities: this.fb.array([]) ,
     });
-   this.storage.get("userDetails").then(val=>{
+   this.storage.get("genuserDetails").then(val=>{
       if(val){
         this.userDetails = val;
-       // this.userId=this.userDetails.response_data.id;
+        this.userId=val.ID;
         }
         });
         this.stindex = this.route.snapshot.paramMap.get('id');
@@ -206,7 +206,7 @@ else{
 
 	  await loading.present();
 			let localarray = {
-				"userid": 3,
+				"userid": this.userId,
 				"id":this.stindex,
 				"project" : this.project,
         "projectid" : this.project,
@@ -274,7 +274,7 @@ else{
       //var data ={}
       var data ={
         
-        "userid": 3,
+        "userid": this.userId,
         
         //this.password
       }
@@ -325,7 +325,7 @@ async getcategoryList(){
     //var data ={}
     var data ={
       
-      "userid": 3,
+      "userid": this.userId,
       
       //this.password
     }
@@ -376,7 +376,7 @@ async getsubcategoryList(){
     //var data ={}
     var data ={
       
-      "userid": 3,
+      "userid": this.userId,
       "catid": this.category,
       //this.password
     }
@@ -459,7 +459,7 @@ selectChangesub(id) {
    
       var data ={
         
-        "userid": 3,
+        "userid": this.userId,
         "id":this.stindex,
         //this.password
       }

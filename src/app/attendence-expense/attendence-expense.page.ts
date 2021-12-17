@@ -71,12 +71,7 @@ export class AttendenceExpensePage implements OnInit {
      
       quantities: this.fb.array([]) ,
     });
-   this.storage.get("userDetails").then(val=>{
-      if(val){
-        this.userDetails = val;
-        //this.userId=this.userDetails.response_data.id;
-        }
-        });
+  
    }
 
   ngOnInit() {
@@ -110,7 +105,7 @@ export class AttendenceExpensePage implements OnInit {
       //var data ={}
       var data ={
         
-        "uwe_createdBy": 3,
+        "uwe_createdBy": this.userId,
         "deposit_data": this.depositData,
         //this.password
       }
@@ -155,7 +150,13 @@ export class AttendenceExpensePage implements OnInit {
 }
 
   ionViewWillEnter(){
-   
+    this.storage.get("genuserDetails").then(val=>{
+      if(val){
+        this.userDetails = val;
+        this.userId=val.ID;
+       
+        }
+      });
   }
   ionViewDidEnter(){
   //  this.storage.clear();

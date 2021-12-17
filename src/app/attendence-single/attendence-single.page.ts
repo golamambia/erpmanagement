@@ -88,10 +88,10 @@ export class AttendenceSinglePage implements OnInit {
      
       quantities: this.fb.array([]) ,
     });
-   this.storage.get("userDetails").then(val=>{
+   this.storage.get("genuserDetails").then(val=>{
       if(val){
         this.userDetails = val;
-       // this.userId=this.userDetails.response_data.id;
+        this.userId=val.ID;
         }
         });
         //this.clientID = this.route.snapshot.paramMap.get('clientName');

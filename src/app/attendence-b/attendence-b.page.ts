@@ -20,6 +20,7 @@ import { DatePipe } from '@angular/common';
   styleUrls: ['./attendence-b.page.scss'],
 })
 export class AttendenceBPage implements OnInit {
+  today = new Date().toISOString();
   minTime:any='';
   maxTime:any= '18:30';
   newminTime:any='';
@@ -60,6 +61,12 @@ export class AttendenceBPage implements OnInit {
  total_work_hrs:any=0;
  total_work_min:any=0;
  checkin:number=0;
+ leave_check:any='';
+ holiday_check:any='';
+assign_check:any='';
+attendence_status:any=0;
+attendence_statusmsg:any='';
+checkinFirststaus:any='';  
  constructor(private http: HttpClient, public navCtrl: NavController,
     public storage: Storage,public loadingController: LoadingController,
     public alertController: AlertController,
@@ -71,12 +78,7 @@ export class AttendenceBPage implements OnInit {
      
       quantities: this.fb.array([]) ,
     });
-   this.storage.get("userDetails").then(val=>{
-      if(val){
-        this.userDetails = val;
-       // this.userId=this.userDetails.response_data.id;
-        }
-        });
+  
         
    }
 
@@ -107,11 +109,28 @@ const loading = await this.loadingController.create({
       });
       loading.dismiss();
     }else{
-   await loading.present();
+
+      const alert = await this.alertController.create({
+     
+        message: 'Are you sure to final submit',
+        buttons: [
+          {
+            text: 'Cancel',
+            role: 'cancel',
+            cssClass: 'secondary',
+            handler: (blah) => {
+              //console.log('Confirm Cancel: blah');
+            }
+          }, {
+            text: 'Okay',
+            handler: () => {
+
+      
+    loading.present();
   //var data ={}
   var data ={
 		
-		"ua_createdBy": 3,
+		"ua_createdBy": this.userId,
 		"deposit_data": this.depositData,
     //this.password
 	}
@@ -149,7 +168,17 @@ const loading = await this.loadingController.create({
     loading.dismiss();
   });
 
+
+}
+}
+]
+});
+
+await alert.present();
+
+
   }
+
 }
  onlyNumberKey(event:any) {
     return (event.charCode == 8 || event.charCode == 0) ? null : event.charCode >= 48 && event.charCode <= 57;
@@ -176,14 +205,24 @@ importFile(event,index) {
   }
   ionViewWillEnter(){
     //this.reloadDepositData();
-    //this.storage.clear(); 
-  this.checkin_check();
+    //this.storage.clear();
+
+  this.storage.get("genuserDetails").then(val=>{
+    if(val){
+      this.userDetails = val;
+      this.userId=val.ID;
+      this.getUser();
+      }
+      });
+      this.getData(); 
+      this.checkin_check();
   }
 
   ionViewDidEnter(){
     this.checkin_check();
     this.reloadDepositData();
-  
+    //this.getData(); 
+    
     
   }
   gotorequestpage(){
@@ -325,6 +364,143 @@ importFile(event,index) {
     await alert.present();
 
   } 
-
+  async getData(){
+     
+    const loading = await this.loadingController.create({
+      message: ''
+    });
+    
+       
+    var headers = new HttpHeaders();
+    headers.append('content-type', 'application/json; charset=utf-8');
+  //this.submitted = true;
+  
+     //await loading.present();
+    //var data ={}
+    var data ={
+      
+      "userid": this.userId,
+      
+      
+      //this.password
+    }
+    this.http.post(host+'assign-leave-check', JSON.stringify(data),{ headers: headers })
+    .subscribe((res:any) => {
+     // console.log(res);
+     loading.dismiss();
+    if(res.status == true){
+       
+      this.holiday_check=res.holiday_leave;
+      this.assign_check=res.assign_leave;
+      if(this.holiday_check.length){
+        
+        if(this.assign_check.length){
+          this.attendence_status=1;
+          this.attendence_statusmsg='';
+        }else{
+          this.attendence_status=0;
+          this.attendence_statusmsg='Today is holiday';
+        }
+      }else{
+        this.attendence_statusmsg='';
+        this.attendence_status=1;
+      }
+         
+      }else{
+      
+    
+      loading.dismiss();
+      }
+    }, (err) => {
+      //console.log(err);
+      loading.dismiss();
+    });
+  
+  
+  }
+  async checkinFirst(){
+     
+    const loading = await this.loadingController.create({
+      message: ''
+    });
+    
+       
+    var headers = new HttpHeaders();
+    headers.append('content-type', 'application/json; charset=utf-8');
+  //this.submitted = true;
+  
+     //await loading.present();
+    //var data ={}
+    var data ={
+      
+      "userid": this.userId,
+            
+      //this.password
+    }
+    this.http.post(host+'attendence-checkin-first', JSON.stringify(data),{ headers: headers })
+    .subscribe((res:any) => {
+      console.log(res);
+     loading.dismiss();
+    if(res.status == true){
+       
+      this.checkinFirststaus=1;
+    
+         
+      }else{
+      
+    
+      loading.dismiss();
+      }
+    }, (err) => {
+      //console.log(err);
+      loading.dismiss();
+    });
+  
+  
+  }
+  async getUser(){
+     
+    const loading = await this.loadingController.create({
+      message: ''
+    });
+    
+       
+    var headers = new HttpHeaders();
+    headers.append('content-type', 'application/json; charset=utf-8');
+  //this.submitted = true;
+  
+     //await loading.present();
+    //var data ={}
+    var data ={
+      
+      "userid": this.userId,
+            
+      //this.password
+    }
+    this.http.post(host+'get-user-details', JSON.stringify(data),{ headers: headers })
+    .subscribe((res:any) => {
+      console.log(res);
+     loading.dismiss();
+    if(res.status == true){
+       if(res.response_data.log_status){
+        this.checkinFirststaus=1;
+       }else{
+        this.checkinFirststaus=0;
+       }
+      //this.checkinFirststaus=1;
+    
+         
+      }else{
+      
+    
+      loading.dismiss();
+      }
+    }, (err) => {
+      //console.log(err);
+      loading.dismiss();
+    });
+  
+  
+  }
 
 }

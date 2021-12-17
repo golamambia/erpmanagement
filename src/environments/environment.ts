@@ -5,8 +5,8 @@
 export const environment = {
   production: false
 };
-export const host = 'https://consult-trico.com/genesis/api/';
-export const image_path = 'https://consult-trico.com/genesis/public/uploads/';
+export const host = 'https://consult-trico.com/erpstagging/api/';
+export const image_path = 'https://consult-trico.com/erpstagging/public/uploads/';
 export const logval = {
   production: 'not'
 };

@@ -28,6 +28,8 @@ declare var window: any;
   styleUrls: ['./attendence-expense-add.page.scss'],
 })
 export class AttendenceExpenseAddPage implements OnInit {
+  maxDate = new Date(new Date().setDate(new Date().getDate() + 1)).toISOString();
+  minDate=new Date(new Date().setDate(new Date().getDate() - 10)).toISOString();
   minTime:any='';
   maxTime:any= '18:30';
   newminTime:any='';
@@ -76,6 +78,12 @@ export class AttendenceExpenseAddPage implements OnInit {
  subcategory_list:any='';
  subcategory_text:any='';
  subcategory:any='';
+ uwe_from:any='';
+ uwe_to:any='';
+ uwe_where:any='';
+ uwe_startkm:any='';
+ uwe_endkm:any='';
+ expense_date:any='';
  constructor(private http: HttpClient, public navCtrl: NavController,
     public storage: Storage,public loadingController: LoadingController,
     public alertController: AlertController,
@@ -94,12 +102,7 @@ export class AttendenceExpenseAddPage implements OnInit {
      
       quantities: this.fb.array([]) ,
     });
-   this.storage.get("userDetails").then(val=>{
-      if(val){
-        this.userDetails = val;
-        //this.userId=this.userDetails.response_data.id;
-        }
-        });
+ 
         //this.clientID = this.route.snapshot.paramMap.get('clientName');
        // console.log(this.clientID);
        this.isToggled = false;
@@ -113,8 +116,14 @@ export class AttendenceExpenseAddPage implements OnInit {
   //  this.storage.clear();s
   }
   ionViewWillEnter(){
-    this.getprojectList();
-    this.getcategoryList();
+    this.storage.get("genuserDetails").then(val=>{
+      if(val){
+        this.userDetails = val;
+        this.userId=val.ID;
+        this.getprojectList();
+        this.getcategoryList();
+        }
+      });
 this.getLocation();
   }
  onlyNumberKey(event:any) {
@@ -177,6 +186,71 @@ if(!this.project){
      resalert.present();
 
    });
+}
+else if((this.subcategory==8 || this.subcategory==20) && !this.uwe_startkm){
+  this.alertController.create({
+    message:'Please enter start km',
+     buttons: ['OK']
+   }).then(resalert => {
+
+     resalert.present();
+
+   });
+}else if((this.subcategory==8 || this.subcategory==20) && !this.uwe_endkm){
+  this.alertController.create({
+    message:'Please enter end km',
+     buttons: ['OK']
+   }).then(resalert => {
+
+     resalert.present();
+
+   });
+}
+else if(this.category==1 && !this.uwe_from){
+  this.alertController.create({
+    message:'Please enter from',
+     buttons: ['OK']
+   }).then(resalert => {
+
+     resalert.present();
+
+   });
+}else if(this.category==1 && !this.uwe_to){
+  this.alertController.create({
+    message:'Please enter to',
+     buttons: ['OK']
+   }).then(resalert => {
+
+     resalert.present();
+
+   });
+}else if(this.category==4 && !this.uwe_where){
+  this.alertController.create({
+    message:'Please enter where',
+     buttons: ['OK']
+   }).then(resalert => {
+
+     resalert.present();
+
+   });
+}else if(this.category==11 && !this.uwe_where){
+  this.alertController.create({
+    message:'Please enter where',
+     buttons: ['OK']
+   }).then(resalert => {
+
+     resalert.present();
+
+   });
+}else if(!this.expense_date){
+  this.alertController.create({
+    message:'Please select date',
+     buttons: ['OK']
+   }).then(resalert => {
+
+     resalert.present();
+
+   });
 }else if(!this.expense_amount){
   this.alertController.create({
     message:'Please enter amount',
@@ -186,16 +260,17 @@ if(!this.project){
      resalert.present();
 
    });
-}else if(!this.work_description){
-  this.alertController.create({
-    message:'Please enter description',
-     buttons: ['OK']
-   }).then(resalert => {
-
-     resalert.present();
-
-   });
 }
+// else if(!this.work_description){
+//   this.alertController.create({
+//     message:'Please enter description',
+//      buttons: ['OK']
+//    }).then(resalert => {
+
+//      resalert.present();
+
+//    });
+// }
 else{
 
 
@@ -210,11 +285,15 @@ else{
     category : this.category,
     category_text : this.category_text,
     subcategory : this.subcategory,
+    uwe_from : this.uwe_from,
+    uwe_to : this.uwe_to,
+    uwe_where : this.uwe_where,
     subcategory_text : splitted2[0].ec_name,
         expense_amount : this.expense_amount,
 				work_description : this.work_description,
         depositImage:this.depositImage,
         address:this.address,
+        expense_date:this.expense_date,
 			
 			};
       //console.log(this.end_time);
@@ -258,7 +337,7 @@ else{
       //var data ={}
       var data ={
         
-        "userid": 3,
+        "userid": this.userId,
         
         //this.password
       }
@@ -309,7 +388,7 @@ async getcategoryList(){
     //var data ={}
     var data ={
       
-      "userid": 3,
+      "userid": this.userId,
       
       //this.password
     }
@@ -360,7 +439,7 @@ async getsubcategoryList(){
     //var data ={}
     var data ={
       
-      "userid": 3,
+      "userid": this.userId,
       "catid": this.category,
       //this.password
     }
@@ -474,6 +553,35 @@ selectChangesub(id) {
         +','+result[0].administrativeArea +','+result[0].countryName;
 			}).catch((error: any) => console.log(error));
      }).catch((error) => {
+       console.log('Error getting location', error);
+     });
+  }
+  async getLocationRel(){
+   const loading = await this.loadingController.create({
+        message: ''
+      });
+   loading.present();
+    this.geolocation.getCurrentPosition().then((resp) => {
+      // resp.coords.latitude
+      // resp.coords.longitude
+
+      let options: NativeGeocoderOptions = {
+        useLocale: true,
+        maxResults: 5
+      };
+
+      this.nativeGeocoder.reverseGeocode(resp.coords.latitude, resp.coords.longitude, options)
+      .then((result: NativeGeocoderResult[]) => {
+         loading.dismiss();
+        // let data = {'pincode':result[0].postalCode, 'userId':10, 'type':'location', 'lat':this.latitude, 'lng': this.longitude}
+       // console.log(result[0]);
+        this.address=result[0].thoroughfare+','+result[0].postalCode+','+result[0].subAdministrativeArea
+        +','+result[0].administrativeArea +','+result[0].countryName;
+      }).catch((error: any) => //console.log(error)
+       loading.dismiss()
+      );
+     }).catch((error) => {
+        loading.dismiss();
        console.log('Error getting location', error);
      });
   }

@@ -96,12 +96,7 @@ minTime:any='';
      
       quantities: this.fb.array([]) ,
     });
-   this.storage.get("userDetails").then(val=>{
-      if(val){
-        this.userDetails = val;
-        //this.userId=this.userDetails.response_data.id;
-        }
-        });
+  
         //this.clientID = this.route.snapshot.paramMap.get('clientName');
        // console.log(this.clientID);
       
@@ -116,8 +111,14 @@ minTime:any='';
   //  this.storage.clear();s
   }
   ionViewWillEnter(){
-    this.getprojectList();
-   this.getcategoryList();
+    this.storage.get("genuserDetails").then(val=>{
+      if(val){
+        this.userDetails = val;
+        this.userId=val.ID;
+        this.getprojectList();
+        this.getcategoryList();
+        }
+      });
    this.reloadDepositData();
 //this.getLocation();
   }
@@ -195,16 +196,17 @@ if(!this.project){
      resalert.present();
 
    });
-}else if(!this.work_description){
-  this.alertController.create({
-    message:'Please enter description',
-     buttons: ['OK']
-   }).then(resalert => {
-
-     resalert.present();
-
-   });
 }
+// else if(!this.work_description){
+//   this.alertController.create({
+//     message:'Please enter description',
+//      buttons: ['OK']
+//    }).then(resalert => {
+
+//      resalert.present();
+
+//    });
+// }
 else{
 
 
@@ -251,7 +253,7 @@ else{
 	}
   deposit_slip_image(){
 		let options: CameraOptions = {
-			quality: 20,
+			quality: 30,
 			targetWidth: 768,
 			targetHeight: 1360,
  			// allowEdit: true,
@@ -295,7 +297,7 @@ async getprojectList(){
     //var data ={}
     var data ={
       
-      "userid": 3,
+      "userid": this.userId,
       
       //this.password
     }
@@ -346,13 +348,13 @@ const loading = await this.loadingController.create({
   //var data ={}
   var data ={
     
-    "userid": 3,
+    "userid": this.userId,
     
     //this.password
   }
   this.http.post(host+'attendence-category-get', JSON.stringify(data),{ headers: headers })
   .subscribe((res:any) => {
-    console.log(res);
+   // console.log(res);
    loading.dismiss();
   if(res.status == true){
    
@@ -418,5 +420,33 @@ this.category_text = this.getDropDownText(this.category, this.category_list)[0].
        console.log('Error getting location', error);
      });
   }
+async getLocationRel(){
+   const loading = await this.loadingController.create({
+        message: ''
+      });
+   loading.present();
+    this.geolocation.getCurrentPosition().then((resp) => {
+      // resp.coords.latitude
+      // resp.coords.longitude
 
+      let options: NativeGeocoderOptions = {
+        useLocale: true,
+        maxResults: 5
+      };
+
+      this.nativeGeocoder.reverseGeocode(resp.coords.latitude, resp.coords.longitude, options)
+      .then((result: NativeGeocoderResult[]) => {
+         loading.dismiss();
+        // let data = {'pincode':result[0].postalCode, 'userId':10, 'type':'location', 'lat':this.latitude, 'lng': this.longitude}
+       // console.log(result[0]);
+        this.address2=result[0].thoroughfare+','+result[0].postalCode+','+result[0].subAdministrativeArea
+        +','+result[0].administrativeArea +','+result[0].countryName;
+      }).catch((error: any) => //console.log(error)
+       loading.dismiss()
+      );
+     }).catch((error) => {
+        loading.dismiss();
+       console.log('Error getting location', error);
+     });
+  }
 }

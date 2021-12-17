@@ -2,9 +2,9 @@
   <ion-split-pane contentId="main-content">
     <ion-menu contentId="main-content" type="overlay">
       <ion-content>
-        <ion-list id="inbox-list">
-          <ion-list-header>ABC</ion-list-header>
-          <ion-note>hi@abc.com</ion-note>
+        <ion-list id="inbox-list" *ngIf="userDetails">
+          <ion-list-header>{{userDetails?.full_name}}</ion-list-header>
+          <ion-note>{{userDetails?.code}}</ion-note>
 
          <!--  <ion-menu-toggle auto-hide="false" >
             <ion-item routerDirection="root" [routerLink]="gghh" lines="none" detail="false" routerLinkActive="selected">
@@ -14,16 +14,16 @@
           </ion-menu-toggle> -->
         </ion-list>
 
-        <ion-list id="labels-list">
+        <ion-list id="labels-list" *ngIf="userDetails">
           <ion-list-header>Module</ion-list-header>
 
-          <ion-item lines="none" routerLink="/attendence" (click)="close()">
+          <!-- <ion-item lines="none" routerLink="/attendence" (click)="close()">
             <ion-icon slot="start" ios="bookmark-outline" md="bookmark-sharp"></ion-icon>
             <ion-label>Attendence</ion-label>
-          </ion-item>
+          </ion-item> -->
           <ion-item lines="none" routerLink="/attendence-b" (click)="close()">
             <ion-icon slot="start" ios="bookmark-outline" md="bookmark-sharp"></ion-icon>
-            <ion-label>Attendence B</ion-label>
+            <ion-label>Attendance</ion-label>
           </ion-item>
           <ion-item lines="none" routerLink="/attendence-expense" (click)="close()">
             <ion-icon slot="start" ios="bookmark-outline" md="bookmark-sharp"></ion-icon>
@@ -33,7 +33,30 @@
             <ion-icon slot="start" ios="bookmark-outline" md="bookmark-sharp"></ion-icon>
             <ion-label>Wallet</ion-label>
           </ion-item>
-
+          <ion-item lines="none" routerLink="/sallery-list" (click)="close()">
+            <ion-icon slot="start" ios="bookmark-outline" md="bookmark-sharp"></ion-icon>
+            <ion-label>Sallery</ion-label>
+          </ion-item>
+          <ion-item lines="none" routerLink="/leave-page" (click)="close()">
+            <ion-icon slot="start" ios="bookmark-outline" md="bookmark-sharp"></ion-icon>
+            <ion-label>Leave</ion-label>
+          </ion-item>
+          <ion-item lines="none" routerLink="/attendence-report" (click)="close()">
+            <ion-icon slot="start" ios="bookmark-outline" md="bookmark-sharp"></ion-icon>
+            <ion-label>Attendance Report</ion-label>
+          </ion-item>
+        </ion-list>
+        <ion-list id="inbox-list" *ngIf="userDetails">
+        </ion-list>
+       <ion-list>
+        <ion-item *ngIf="!userDetails" lines="none" routerLink="/login" (click)="close()">
+            <ion-icon name="log-in-outline"></ion-icon>
+            <ion-label style="padding-left: 10px;">Login</ion-label>
+          </ion-item>
+          <ion-item *ngIf="userDetails" lines="none" (click)="logout()">
+            <ion-icon name="log-out-outline"></ion-icon>
+            <ion-label style="padding-left: 10px;">Logout</ion-label>
+          </ion-item>
         </ion-list>
       </ion-content>
     </ion-menu>

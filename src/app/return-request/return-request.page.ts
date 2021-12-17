@@ -59,6 +59,9 @@ export class ReturnRequestPage implements OnInit {
  total_amount:any=0;
  total_work_hrs:any=0;
  total_work_min:any=0;
+ search_date:any='';
+ search_category:any='';
+ search_status:any='';
  constructor(private http: HttpClient, public navCtrl: NavController,
     public storage: Storage,public loadingController: LoadingController,
     public alertController: AlertController,
@@ -70,10 +73,10 @@ export class ReturnRequestPage implements OnInit {
      
       quantities: this.fb.array([]) ,
     });
-   this.storage.get("userDetails").then(val=>{
+   this.storage.get("genuserDetails").then(val=>{
       if(val){
         this.userDetails = val;
-       // this.userId=this.userDetails.response_data.id;
+        this.userId=val.ID;
         }
         });
    }
@@ -114,8 +117,9 @@ export class ReturnRequestPage implements OnInit {
         //var data ={}
         var data ={
           
-          "userid": 3,
-          
+          "userid": this.userId,
+          "search_date":this.search_date,
+          "search_status":this.search_status,
           //this.password
         }
         this.http.post(host+'user-returnrequest-get', JSON.stringify(data),{ headers: headers })
@@ -150,6 +154,19 @@ export class ReturnRequestPage implements OnInit {
       
 
   } 
+  selectDate(dt) {
+
+    this.search_date = this.datePipe.transform(dt, 'Y-MM-dd');
+   // console.log(jj);
+    this.reloadDepositData();
+  }
+  
+  selectStatus(id) {
+  
+    this.search_status = id;
+    //console.log(id);
+    this.reloadDepositData();
+  }
   gotorequestpage(){
     this.navCtrl.navigateForward(['/return-request-create', {
      // clientName: 'test',

@@ -29,6 +29,8 @@ declare var window: any;
   styleUrls: ['./attendence-expense-edit.page.scss'],
 })
 export class AttendenceExpenseEditPage implements OnInit {
+  maxDate = new Date(new Date().setDate(new Date().getDate() + 1)).toISOString();
+  minDate=new Date(new Date().setDate(new Date().getDate() - 10)).toISOString();
 minTime:any='';
   maxTime:any= '18:30';
   newminTime:any='';
@@ -79,6 +81,10 @@ minTime:any='';
  subcategory_text:any='';
  subcategory:any='';
  project_text:any='';
+ uwe_from:any='';
+ uwe_to:any='';
+ uwe_where:any='';
+ expense_date:any='';
  constructor(private http: HttpClient, public navCtrl: NavController,
     public storage: Storage,public loadingController: LoadingController,
     public alertController: AlertController,
@@ -97,12 +103,7 @@ minTime:any='';
      
       quantities: this.fb.array([]) ,
     });
-   this.storage.get("userDetails").then(val=>{
-      if(val){
-        this.userDetails = val;
-        this.userId=this.userDetails.response_data.id;
-        }
-        });
+  
         this.stindex = this.route.snapshot.paramMap.get('index');
         this.isToggled = false;
       
@@ -116,8 +117,14 @@ minTime:any='';
   //  this.storage.clear();s
   }
   ionViewWillEnter(){
-    this.getprojectList();
-    this.getcategoryList();
+    this.storage.get("genuserDetails").then(val=>{
+      if(val){
+        this.userDetails = val;
+        this.userId=val.ID;
+        this.getprojectList();
+        this.getcategoryList();
+        }
+      });
   this.reloadDepositData();
 this.getLocation();
   }
@@ -175,6 +182,51 @@ if(!this.project){
      resalert.present();
 
    });
+}else if(this.category==1 && !this.uwe_from){
+  this.alertController.create({
+    message:'Please enter from',
+     buttons: ['OK']
+   }).then(resalert => {
+
+     resalert.present();
+
+   });
+}else if(this.category==1 && !this.uwe_to){
+  this.alertController.create({
+    message:'Please enter to',
+     buttons: ['OK']
+   }).then(resalert => {
+
+     resalert.present();
+
+   });
+}else if(this.category==4 && !this.uwe_where){
+  this.alertController.create({
+    message:'Please enter where',
+     buttons: ['OK']
+   }).then(resalert => {
+
+     resalert.present();
+
+   });
+}else if(this.category==11 && !this.uwe_where){
+  this.alertController.create({
+    message:'Please enter where',
+     buttons: ['OK']
+   }).then(resalert => {
+
+     resalert.present();
+
+   });
+}else if(!this.expense_date){
+  this.alertController.create({
+    message:'Please select date',
+     buttons: ['OK']
+   }).then(resalert => {
+
+     resalert.present();
+
+   });
 }else if(!this.expense_amount){
   this.alertController.create({
     message:'Please enter amount',
@@ -184,16 +236,17 @@ if(!this.project){
      resalert.present();
 
    });
-}else if(!this.work_description){
-  this.alertController.create({
-    message:'Please enter description',
-     buttons: ['OK']
-   }).then(resalert => {
-
-     resalert.present();
-
-   });
 }
+// else if(!this.work_description){
+//   this.alertController.create({
+//     message:'Please enter description',
+//      buttons: ['OK']
+//    }).then(resalert => {
+
+//      resalert.present();
+
+//    });
+// }
 else{
 
 
@@ -209,10 +262,14 @@ else{
     category_text : this.category_text,
     subcategory : this.subcategory,
     subcategory_text : splitted2[0].ec_name,
+    uwe_from : this.uwe_from,
+    uwe_to : this.uwe_to,
+    uwe_where : this.uwe_where,
         expense_amount : this.expense_amount,
 				work_description : this.work_description,
         depositImage:this.depositImage,
         address:this.address,
+        expense_date:this.expense_date,
 			
 			};
       //console.log(this.end_time);
@@ -256,7 +313,7 @@ else{
       //var data ={}
       var data ={
         
-        "userid": 3,
+        "userid": this.userId,
         
         //this.password
       }
@@ -307,13 +364,13 @@ async getcategoryList(){
     //var data ={}
     var data ={
       
-      "userid": 3,
+      "userid": this.userId,
       
       //this.password
     }
     this.http.post(host+'expense-category-get', JSON.stringify(data),{ headers: headers })
     .subscribe((res:any) => {
-      console.log(res);
+      //console.log(res);
      loading.dismiss();
     if(res.status == true){
      
@@ -358,13 +415,13 @@ async getsubcategoryList(){
     //var data ={}
     var data ={
       
-      "userid": 3,
+      "userid": this.userId,
       "catid": this.category,
       //this.password
     }
     this.http.post(host+'expense-subcategory-get', JSON.stringify(data),{ headers: headers })
     .subscribe((res:any) => {
-      console.log(res);
+      //console.log(res);
      loading.dismiss();
     if(res.status == true){
      
@@ -441,11 +498,15 @@ selectChangesub(id) {
         this.category_text=element.category_text;
         this.subcategory=element.subcategory;
         this.subcategory_text=element.subcategory_text;
+        this.uwe_from = element.uwe_from;
+        this.uwe_to = element.uwe_to;
+        this.uwe_where = element.uwe_where;
         this.expense_amount=element.expense_amount;
       
         this.work_description=element.work_description;
         this.depositImage=element.depositImage;
         this.address=element.address;
+        this.expense_date=element.expense_date;
         //console.log(element.subcategory_text);
       }
      
@@ -458,7 +519,7 @@ selectChangesub(id) {
   } 
   deposit_slip_image(){
 		let options: CameraOptions = {
-			quality: 20,
+			quality: 30,
 			targetWidth: 768,
 			targetHeight: 1360,
  			// allowEdit: true,
@@ -501,6 +562,35 @@ selectChangesub(id) {
         +','+result[0].administrativeArea +','+result[0].countryName;
 			}).catch((error: any) => console.log(error));
      }).catch((error) => {
+       console.log('Error getting location', error);
+     });
+  }
+  async getLocationRel(){
+   const loading = await this.loadingController.create({
+        message: ''
+      });
+   loading.present();
+    this.geolocation.getCurrentPosition().then((resp) => {
+      // resp.coords.latitude
+      // resp.coords.longitude
+
+      let options: NativeGeocoderOptions = {
+        useLocale: true,
+        maxResults: 5
+      };
+
+      this.nativeGeocoder.reverseGeocode(resp.coords.latitude, resp.coords.longitude, options)
+      .then((result: NativeGeocoderResult[]) => {
+         loading.dismiss();
+        // let data = {'pincode':result[0].postalCode, 'userId':10, 'type':'location', 'lat':this.latitude, 'lng': this.longitude}
+       // console.log(result[0]);
+        this.address=result[0].thoroughfare+','+result[0].postalCode+','+result[0].subAdministrativeArea
+        +','+result[0].administrativeArea +','+result[0].countryName;
+      }).catch((error: any) => //console.log(error)
+       loading.dismiss()
+      );
+     }).catch((error) => {
+        loading.dismiss();
        console.log('Error getting location', error);
      });
   }

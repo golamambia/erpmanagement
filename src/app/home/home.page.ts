@@ -11,7 +11,7 @@ import { NativeGeocoder, NativeGeocoderResult, NativeGeocoderOptions } from '@io
 import { LocationAccuracy } from '@ionic-native/location-accuracy/ngx';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
-
+import { BatteryStatus } from '@ionic-native/battery-status/ngx';
 declare var window: any;
 
 
@@ -34,7 +34,8 @@ constructor(
    public nativeGeocoder: NativeGeocoder, 
    private locationAccuracy: LocationAccuracy,
    private geolocation: Geolocation,    
-   private androidPermissions: AndroidPermissions
+   private androidPermissions: AndroidPermissions,
+   private batteryStatus: BatteryStatus,
     
    ) {
     this.locationCordinates = {
@@ -46,6 +47,12 @@ constructor(
     this.timestamp = Date.now();
    }
    ionViewWillEnter(){
+    this.batteryStatus.onChange().subscribe(status => {
+      //console.log('batteryStatus', status.level);
+      // if(this.user_id != 0){
+      //   this.authService.postData({'status':status.level, 'user_id':this.user_id, 'app_version': this.current_app_version}, 'changeBatteryStatus').then((result:any) => {});
+      // }
+    });
    // console.log("Outer")
 //    if (window.cordova) {
 //     cordova.plugins.diagnostic.isLocationEnabled(function(enabled) {
@@ -55,6 +62,7 @@ constructor(
 //     });
 // }
    this.getLocation();
+   this.checkPermission();
    }
 
 
@@ -94,7 +102,7 @@ locationAccPermission() {
             this.enableGPS();
           },
           error => {
-            alert(error)
+            //alert(error)
           }
         );
     }

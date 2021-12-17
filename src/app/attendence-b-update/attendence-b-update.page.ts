@@ -98,12 +98,7 @@ minTime:any='';
      
       quantities: this.fb.array([]) ,
     });
-   this.storage.get("userDetails").then(val=>{
-      if(val){
-        this.userDetails = val;
-        //this.userId=this.userDetails.response_data.id;
-        }
-        });
+   
         //this.clientID = this.route.snapshot.paramMap.get('clientName');
        // console.log(this.clientID);
       
@@ -118,8 +113,14 @@ minTime:any='';
   //  this.storage.clear();s
   }
   ionViewWillEnter(){
-    this.getprojectList();
-    this.getcategoryList();
+    this.storage.get("genuserDetails").then(val=>{
+      if(val){
+        this.userDetails = val;
+        this.userId=val.ID;
+        this.getprojectList();
+        this.getcategoryList();
+        }
+      });
    this.reloadDepositData();
 //this.getLocation();
   }
@@ -142,7 +143,7 @@ minTime:any='';
         this.depositImage=element.depositImage;
         this.address=element.address;
         this.address2=element.address2;
-        console.log(element.project);
+        //console.log(element.project);
       }
      
       });
@@ -197,16 +198,17 @@ if(!this.project){
      resalert.present();
 
    });
-}else if(!this.work_description){
-  this.alertController.create({
-    message:'Please enter description',
-     buttons: ['OK']
-   }).then(resalert => {
-
-     resalert.present();
-
-   });
 }
+// else if(!this.work_description){
+//   this.alertController.create({
+//     message:'Please enter description',
+//      buttons: ['OK']
+//    }).then(resalert => {
+
+//      resalert.present();
+
+//    });
+// }
 else{
 
 
@@ -295,7 +297,7 @@ else{
       //var data ={}
       var data ={
         
-        "userid": 3,
+        "userid": this.userId,
         
         //this.password
       }
@@ -346,13 +348,13 @@ else{
     //var data ={}
     var data ={
       
-      "userid": 3,
+      "userid": this.userId,
       
       //this.password
     }
     this.http.post(host+'attendence-category-get', JSON.stringify(data),{ headers: headers })
     .subscribe((res:any) => {
-      console.log(res);
+      //console.log(res);
      loading.dismiss();
     if(res.status == true){
      
@@ -392,7 +394,7 @@ else{
   selectChange(id) {
   
   this.category_text = this.getDropDownText(this.category, this.category_list)[0].ac_name;
-   console.log(this.category_text);
+   //console.log(this.category_text);
   
   }
   getLocation(){

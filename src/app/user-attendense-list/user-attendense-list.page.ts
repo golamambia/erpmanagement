@@ -58,6 +58,9 @@ export class UserAttendenseListPage implements OnInit {
  total_amount:any=0;
  total_work_hrs:any=0;
  total_work_min:any=0;
+ project_list:any='';
+ search_project:any='';
+ search_date:any='';
  constructor(private http: HttpClient, public navCtrl: NavController,
     public storage: Storage,public loadingController: LoadingController,
     public alertController: AlertController,
@@ -69,10 +72,10 @@ export class UserAttendenseListPage implements OnInit {
      
       quantities: this.fb.array([]) ,
     });
-   this.storage.get("userDetails").then(val=>{
+   this.storage.get("genuserDetails").then(val=>{
       if(val){
         this.userDetails = val;
-       // this.userId=this.userDetails.response_data.id;
+        this.userId=val.ID;
         }
         });
    }
@@ -87,12 +90,16 @@ export class UserAttendenseListPage implements OnInit {
 }
 
   ionViewWillEnter(){
+     if(this.userId){
+      this.getprojectList();
+  
+    }
+   
     this.reloadDepositData();
   }
   ionViewDidEnter(){
   //  this.storage.clear();
-   
-  
+    
     
   }
 
@@ -113,8 +120,9 @@ export class UserAttendenseListPage implements OnInit {
         //var data ={}
         var data ={
           
-          "userid": 3,
-          
+          "userid": this.userId,
+          "search_project":this.search_project,
+          "search_date":this.search_date,
           //this.password
         }
         this.http.post(host+'user-attendence-get', JSON.stringify(data),{ headers: headers })
@@ -149,6 +157,69 @@ export class UserAttendenseListPage implements OnInit {
       
 
   } 
+  async getprojectList(){
+ 
+    //console.log(this.subject_name);
+    
+    const loading = await this.loadingController.create({
+        message: ''
+      });
+      
+         
+      var headers = new HttpHeaders();
+      headers.append('content-type', 'application/json; charset=utf-8');
+    //this.submitted = true;
+    
+      // await loading.present();
+      //var data ={}
+      var data ={
+        
+        "userid": this.userId,
+        
+        //this.password
+      }
+      this.http.post(host+'user-project-get', JSON.stringify(data),{ headers: headers })
+      .subscribe((res:any) => {
+        //console.log(res);
+       loading.dismiss();
+      if(res.status == true){
+       
+         this.project_list=res.response_data;
+                 
+       
+        }else{
+
+        // this.alertController.create({
+        //  message: 'Something went wrong',
+        //   buttons: ['OK']
+        // }).then(resalert => {
+    
+        //   resalert.present();
+    
+        // });
+        loading.dismiss();
+        }
+      }, (err) => {
+        //console.log(err);
+        loading.dismiss();
+      });
+    
+    
+    
+
+}
+selectProject(id) {
+
+  this.search_project = id;
+  //console.log(id);
+  this.reloadDepositData();
+} 
+selectDate(dt) {
+
+  this.search_date = this.datePipe.transform(dt, 'Y-MM-dd');
+ // console.log(jj);
+  this.reloadDepositData();
+}
   gotorequestpage(){
     this.navCtrl.navigateForward(['/return-request', {
      // clientName: 'test',

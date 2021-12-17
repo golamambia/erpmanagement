@@ -90,10 +90,10 @@ export class ReturnRequestCreatePage implements OnInit {
      
       quantities: this.fb.array([]) ,
     });
-   this.storage.get("userDetails").then(val=>{
+   this.storage.get("genuserDetails").then(val=>{
       if(val){
         this.userDetails = val;
-        //this.userId=this.userDetails.response_data.id;
+        this.userId=val.ID;
         }
         });
         //this.clientID = this.route.snapshot.paramMap.get('clientName');
@@ -109,6 +109,13 @@ export class ReturnRequestCreatePage implements OnInit {
   //  this.storage.clear();s
   }
   ionViewWillEnter(){
+    this.storage.get("genuserDetails").then(val=>{
+      if(val){
+        this.userDetails = val;
+        this.userId=val.ID;
+        
+        }
+      });
   this.getcashMode();
 this.getAmount();
   }
@@ -159,7 +166,7 @@ importFile(event,index) {
       //var data ={}
       var data ={
         
-        "userid": 3,
+        "userid": this.userId,
         
         //this.password
       }
@@ -257,7 +264,7 @@ else{
 				
         uw_amount : this.expense_amount,
 				uw_description : this.work_description,
-        userId:3,
+        userId:this.userId,
         uw_mode : this.uw_mode,
         uw_txnno : this.uw_txnno,
         depositImage:this.depositImage,
@@ -341,7 +348,7 @@ else{
     //var data ={}
     var data ={
       
-      "userid": 3,
+      "userid": this.userId,
       
       //this.password
     }
