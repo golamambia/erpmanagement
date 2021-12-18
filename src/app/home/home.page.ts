@@ -149,14 +149,14 @@ getLocation(){
     let options: NativeGeocoderOptions = {
       useLocale: true,
       maxResults: 5
-    };
+    }; 
 
     this.nativeGeocoder.reverseGeocode(resp.coords.latitude, resp.coords.longitude, options)
     .then((result: NativeGeocoderResult[]) => {
       // let data = {'pincode':result[0].postalCode, 'userId':10, 'type':'location', 'lat':this.latitude, 'lng': this.longitude}
      // console.log(result[0]);
       this.address=result[0].thoroughfare+','+result[0].postalCode+','+result[0].subAdministrativeArea
-      +','+result[0].administrativeArea +','+result[0].countryName;
+      +','+result[0].administrativeArea +','+result[0].countryName +' accuracy:'+ resp.coords.accuracy;;
     }).catch((error: any) => console.log(error));
    }).catch((error) => {
      console.log('Error getting location', error);

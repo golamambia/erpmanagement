@@ -21,7 +21,6 @@ import { DatePipe } from '@angular/common';
 })
 export class AttendenceBPage implements OnInit {
   today = new Date().toISOString();
-  today_date = new Date();
   minTime:any='';
   maxTime:any= '18:30';
   newminTime:any='';
@@ -205,7 +204,7 @@ importFile(event,index) {
 
   }
   ionViewWillEnter(){
-    this.reloadDepositData();
+    //this.reloadDepositData();
     //this.storage.clear();
 
   this.storage.get("genuserDetails").then(val=>{
@@ -245,7 +244,7 @@ importFile(event,index) {
     });
    
   }
-  async reloadDepositData2(){
+  async reloadDepositData(){
    // this.checkin_check();
     //let d
    // console.log(1234);
@@ -284,61 +283,6 @@ importFile(event,index) {
 		 
      
 	  });
-
-  } 
-
-    async reloadDepositData(){
- 
-      //console.log(this.subject_name);
-      
-      const loading = await this.loadingController.create({
-          message: ''
-        });
-        
-           
-        var headers = new HttpHeaders();
-        headers.append('content-type', 'application/json; charset=utf-8');
-      //this.submitted = true;
-      
-         await loading.present();
-        //var data ={}
-        var data ={
-          
-          "userid": this.userId,
-          "search_project":'',
-          "search_date":this.datePipe.transform(this.today_date, 'yyyy-MM-dd'),
-          //this.password
-        }
-        this.http.post(host+'user-attendence-get', JSON.stringify(data),{ headers: headers })
-        .subscribe((res:any) => {
-          console.log(res);
-         loading.dismiss();
-        if(res.status == true){
-         
-           this.depositData=res.response_data;
-           
-          
-         
-          }else{
-            this.depositData=res.response_data;
-           
-          this.alertController.create({
-           message: 'Something went wrong',
-            buttons: ['OK']
-          }).then(resalert => {
-      
-            resalert.present();
-      
-          });
-          loading.dismiss();
-          }
-        }, (err) => {
-          //console.log(err);
-          loading.dismiss();
-        });
-      
-      
-      
 
   } 
   addAttendence(){
@@ -495,7 +439,7 @@ importFile(event,index) {
     }
     this.http.post(host+'attendence-checkin-first', JSON.stringify(data),{ headers: headers })
     .subscribe((res:any) => {
-      //console.log(res);
+      console.log(res);
      loading.dismiss();
     if(res.status == true){
        
@@ -535,7 +479,7 @@ importFile(event,index) {
     }
     this.http.post(host+'get-user-details', JSON.stringify(data),{ headers: headers })
     .subscribe((res:any) => {
-      //console.log(res);
+      console.log(res);
      loading.dismiss();
     if(res.status == true){
        if(res.response_data.log_status){
@@ -557,80 +501,6 @@ importFile(event,index) {
     });
   
   
-  }
-  async remove_expense(id){
-    const loading = await this.loadingController.create({
-      message: ''
-    });
-    
-       
-    var headers = new HttpHeaders();
-    headers.append('content-type', 'application/json; charset=utf-8');
-    const alert = await this.alertController.create({
-     
-      message: 'Are you sure to delete',
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel',
-          cssClass: 'secondary',
-          handler: (blah) => {
-            //console.log('Confirm Cancel: blah');
-          }
-        }, {
-          text: 'Okay',
-          handler: () => {
-            //console.log('Confirm Okay');
-             loading.present();
-            let localarray = {
-              "userid": this.userId,
-              "id":id,
-              
-              //"address":this.address,
-            
-            };
-            //console.log(this.end_time);
-      
-            this.http.post(host+'user-attendence-deletebyid', JSON.stringify(localarray),{ headers: headers })
-            .subscribe((res:any) => {
-             // console.log(res);
-             loading.dismiss();
-            if(res.status == true){
-              this.reloadDepositData();
-             this.alertController.create({
-             
-               message: 'Successfully deleted',
-                buttons: ['OK']
-              }).then(resalert => {
-          
-                resalert.present();
-          
-              });
-              }else{
-      
-              this.alertController.create({
-               message: 'Something went wrong',
-                buttons: ['OK']
-              }).then(resalert => {
-          
-                resalert.present();
-          
-              });
-              loading.dismiss();
-              }
-            }, (err) => {
-              //console.log(err);
-              loading.dismiss();
-            });     
-            
-            
-          }
-        }
-      ]
-    });
-
-    await alert.present();
-
   }
 
 }

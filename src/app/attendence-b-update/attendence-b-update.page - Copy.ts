@@ -19,16 +19,17 @@ import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { Camera, CameraOptions } from '@ionic-native/camera/ngx';
 import { PhotoViewer } from '@ionic-native/photo-viewer/ngx';
 import { Base64 } from '@ionic-native/base64/ngx';
-
 import { Injectable } from '@angular/core';
 import * as _ from 'lodash';
+
 @Component({
-  selector: 'app-attendence-b-add',
-  templateUrl: './attendence-b-add.page.html',
-  styleUrls: ['./attendence-b-add.page.scss'],
+  selector: 'app-attendence-b-update',
+  templateUrl: './attendence-b-update.page.html',
+  styleUrls: ['./attendence-b-update.page.scss'],
 })
-export class AttendenceBAddPage implements OnInit {
-  minTime:any='';
+export class AttendenceBUpdatePage implements OnInit {
+
+minTime:any='';
   maxTime:any= '18:30';
   newminTime:any='';
   submitted = false;
@@ -58,8 +59,8 @@ export class AttendenceBAddPage implements OnInit {
  res:any;
  project:any;
  category:any='';
-
- start_time:any=new Date().toISOString();
+ category_text:any;
+ start_time:any='';
  start_timenw:any='';
  end_time:any='';
  work_description:any='';
@@ -71,10 +72,12 @@ export class AttendenceBAddPage implements OnInit {
  current_address:any='';
  depositImage:any = "";
  isToggled: boolean;
+ stindex:any='';
+ attendenceData:any='';
  projecy_list:any='';
- category_list:any='';
+ category_list:any= "";
  project_text:any='';
- category_text:any='';
+ projectid:any='';
  constructor(private http: HttpClient, public navCtrl: NavController,
     public storage: Storage,public loadingController: LoadingController,
     public alertController: AlertController,
@@ -89,6 +92,8 @@ export class AttendenceBAddPage implements OnInit {
        private sanitizer: DomSanitizer,
        //public events: Events
     ) { 
+      this.getcategoryList();
+      console.log("cat_list", this.category_list);
    this.productForm = this.fb.group({
      
       quantities: this.fb.array([]) ,
@@ -98,6 +103,7 @@ export class AttendenceBAddPage implements OnInit {
        // console.log(this.clientID);
       
        this.isToggled = false;
+       this.stindex = this.route.snapshot.paramMap.get('index');
    }
 
   ngOnInit() {
@@ -115,9 +121,63 @@ export class AttendenceBAddPage implements OnInit {
         this.getcategoryList();
         }
       });
-   
-this.getLocation();
+   this.reloadDepositData();
+//this.getLocation();
   }
+  async reloadDepositData(){
+ 
+    //console.log(this.subject_name);
+    
+    const loading = await this.loadingController.create({
+        message: ''
+      });
+      
+         
+      var headers = new HttpHeaders();
+      headers.append('content-type', 'application/json; charset=utf-8');
+   
+      var data ={
+        
+        "userid": this.userId,
+        "id":this.stindex,
+        //this.password
+      }
+      this.http.post(host+'user-attendence-getbyid', JSON.stringify(data),{ headers: headers })
+      .subscribe((res:any) => {
+        //console.log(res);
+       loading.dismiss();
+      if(res.status == true){
+        this.project=res.response_data[0].ua_project;
+        this.category=res.response_data[0].ua_category;
+        //this.subcategory=res.response_data[0].uwe_subcategory;
+       // this.expense_amount=res.response_data[0].uwe_amount;
+       this.start_time=res.response_data[0].ua_checkintime;
+       this.end_time=res.response_data[0].ua_checkouttime;
+        this.work_description=res.response_data[0].ua_description;
+        this.depositImage=res.response_data[0].ua_image;
+        this.address=res.response_data[0].ua_locationin;       
+        this.address2=res.response_data[0].ua_locationout;
+        }else{
+
+        this.alertController.create({
+         message: 'Something went wrong',
+          buttons: ['OK']
+        }).then(resalert => {
+    
+          resalert.present();
+    
+        });
+        loading.dismiss();
+        }
+      }, (err) => {
+        //console.log(err);
+        loading.dismiss();
+      });
+    
+    
+    
+
+} 
  onlyNumberKey(event:any) {
     return (event.charCode == 8 || event.charCode == 0) ? null : event.charCode >= 48 && event.charCode <= 57;
 }
@@ -144,13 +204,7 @@ importFile(event,index) {
   }
 
   async submit_mode(){
-    const loading = await this.loadingController.create({
-      message: 'Sending...'
-    });
-    
-       
-    var headers = new HttpHeaders();
-    headers.append('content-type', 'application/json; charset=utf-8');
+	
 if(!this.project){
   this.alertController.create({
     message:'Please select project',
@@ -170,81 +224,63 @@ if(!this.project){
 
    });
 }
+// else if(!this.work_description){
+//   this.alertController.create({
+//     message:'Please enter description',
+//      buttons: ['OK']
+//    }).then(resalert => {
 
+//      resalert.present();
+
+//    });
+// }
 else{
 
-      var splitted = this.getDropDownText2(this.project, this.projecy_list); 
-      //console.log(splitted)
-			let localarray = {
-        projectid : splitted[0].sub_project_id,
-				project : this.project,
-        project_full : this.project,
-        project_text :splitted[0].project_id+' > '+splitted[0].sub_project_id,
+
+  var splitted = this.getDropDownText2(this.project, this.projecy_list); 
+  //console.log(splitted)
+  let localarray = {
+    projectid : splitted[0].sub_project_id,
+    project : this.project,
+   
+    project_text :splitted[0].project_id+' > '+splitted[0].sub_project_id,
 				category : this.category,
-        category_text : this.category_text,
+        category_text:this.category_text,
 				start_time :this.datePipe.transform(this.start_time, 'hh:mm'),
-        end_time :'',
+        end_time :this.datePipe.transform(this.end_time, 'hh:mm'),
         start_time24 :this.datePipe.transform(this.start_time, 'HH:mm'),
-        end_time24 :'',
+        end_time24 :this.datePipe.transform(this.end_time, 'HH:mm'),
 			  start_timef :this.start_time,
-        end_timef :'',
+        end_timef :this.end_time,
 			  work_description : this.work_description,
         depositImage:this.depositImage,
         address:this.address,
         address2:this.address2,
-        ua_createdBy: this.userId,
 			};
       //console.log(this.end_time);
 
+			let toBeUpload:any ='';
 
-      loading.present();
+			await this.storage.forEach( (value, key, index) => {
+				if(key == 'attendencebData'){
+          toBeUpload=value;
+          toBeUpload[this.stindex] = localarray;
+					
+				}
+			});
      
-      this.http.post(host+'user-attendence-add', JSON.stringify(localarray),{ headers: headers })
-      .subscribe((res:any) => {
-       // console.log(res);
-       loading.dismiss();
-      if(res.status == true){
-      
+      	this.storage.set("attendencebData",toBeUpload).then((r) => {
          
-        this.alertController.create({
-          message: 'Attendence successful',
-           buttons: ['OK']
-         }).then(resalert => {
-     
-           resalert.present();
-     
-         });
-       	this.navCtrl.back();
-        this.project='';
-       this.category='';
-      this.category_text='';
-       this.start_time='';
-        this.work_description='';
-       this.depositImage='';
-       this.address='';
-        this.address2='';
-        }else{
-        this.alertController.create({
-         message: 'Something went wrong',
-          buttons: ['OK']
-        }).then(resalert => {
-    
-          resalert.present();
-    
-        });
-        loading.dismiss();
-        }
-      }, (err) => {
-        //console.log(err);
-        loading.dismiss();
-      });
+					this.navCtrl.back();
+       
+			});
 
     }
 		
 	}
   deposit_slip_image(){
 		let options: CameraOptions = {
-			quality: 30,
+			quality: 20,
 			targetWidth: 768,
 			targetHeight: 1360,
  			// allowEdit: true,
@@ -292,7 +328,7 @@ else{
       }
       this.http.post(host+'user-project-get', JSON.stringify(data),{ headers: headers })
       .subscribe((res:any) => {
-        //console.log(res);
+       // console.log(res);
        loading.dismiss();
       if(res.status == true){
        
@@ -300,7 +336,7 @@ else{
                  
        
         }else{
-
+  
         // this.alertController.create({
         //  message: 'Something went wrong',
         //   buttons: ['OK']
@@ -318,10 +354,10 @@ else{
     
     
     
-
-} 
-async getcategoryList(){
- 
+  
+  } 
+  async getcategoryList(){
+  
   //console.log(this.subject_name);
   
   const loading = await this.loadingController.create({
@@ -337,7 +373,7 @@ async getcategoryList(){
     //var data ={}
     var data ={
       
-      "userid":  this.userId,
+      "userid": this.userId,
       
       //this.password
     }
@@ -348,10 +384,8 @@ async getcategoryList(){
     if(res.status == true){
      
        this.category_list=res.response_data;
-               
-     
       }else{
-
+  
       // this.alertController.create({
       //  message: 'Something went wrong',
       //   buttons: ['OK']
@@ -367,10 +401,27 @@ async getcategoryList(){
       loading.dismiss();
     });
   
+  }
+  getDropDownText2(id, object){
+    const selObj = _.filter(object, function (o) {
+        return (_.includes(id,o.ID));
+    });
+    return selObj;
   
+  } 
+  getDropDownText(id, object){
+    const selObj = _.filter(object, function (o) {
+        return (_.includes(id,o.ac_ID));
+    });
+    return selObj;
   
-
-} 
+  }
+  selectChange(id) {
+  
+  this.category_text = this.getDropDownText(this.category, this.category_list)[0].ac_name;
+   //console.log(this.category_text);
+  
+  }
   getLocation(){
     this.geolocation.getCurrentPosition().then((resp) => {
       // resp.coords.latitude
@@ -385,59 +436,10 @@ async getcategoryList(){
 			.then((result: NativeGeocoderResult[]) => {
 				// let data = {'pincode':result[0].postalCode, 'userId':10, 'type':'location', 'lat':this.latitude, 'lng': this.longitude}
        // console.log(result[0]);
-        this.address=result[0].thoroughfare+','+result[0].postalCode+','+result[0].subAdministrativeArea
+        this.address2=result[0].thoroughfare+','+result[0].postalCode+','+result[0].subAdministrativeArea
         +','+result[0].administrativeArea +','+result[0].countryName;
 			}).catch((error: any) => console.log(error));
      }).catch((error) => {
-       console.log('Error getting location', error);
-     });
-  }
-  getDropDownText2(id, object){
-    const selObj = _.filter(object, function (o) {
-        return (_.includes(id,o.ID));
-    });
-    return selObj;
-  
-  }
-getDropDownText(id, object){
-  const selObj = _.filter(object, function (o) {
-      return (_.includes(id,o.ac_ID));
-  });
-  return selObj;
-
-}
-selectChange(id) {
-
-  this.category_text = this.getDropDownText(id, this.category_list)[0].ac_name;
- // console.log(this.category_text);
-  
-}
-async getLocationRel(){
-   const loading = await this.loadingController.create({
-        message: ''
-      });
-   loading.present();
-    this.geolocation.getCurrentPosition().then((resp) => {
-      // resp.coords.latitude
-      // resp.coords.longitude
-
-      let options: NativeGeocoderOptions = {
-        useLocale: true,
-        maxResults: 5
-      };
-
-      this.nativeGeocoder.reverseGeocode(resp.coords.latitude, resp.coords.longitude, options)
-      .then((result: NativeGeocoderResult[]) => {
-         loading.dismiss();
-        // let data = {'pincode':result[0].postalCode, 'userId':10, 'type':'location', 'lat':this.latitude, 'lng': this.longitude}
-       // console.log(result[0]);
-        this.address=result[0].thoroughfare+','+result[0].postalCode+','+result[0].subAdministrativeArea
-        +','+result[0].administrativeArea +','+result[0].countryName;
-      }).catch((error: any) => //console.log(error)
-       loading.dismiss()
-      );
-     }).catch((error) => {
-        loading.dismiss();
        console.log('Error getting location', error);
      });
   }

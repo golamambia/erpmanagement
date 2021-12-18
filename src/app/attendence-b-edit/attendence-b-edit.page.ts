@@ -120,9 +120,9 @@ minTime:any='';
         }
       });
    this.reloadDepositData();
-//this.getLocation();
+this.getLocation();
   }
-   async reloadDepositData(){
+   async reloadDepositData2(){
     //let d
 	await this.storage.forEach( (value, key, index) => {
       if(key == 'attendencebData'){
@@ -151,6 +151,60 @@ minTime:any='';
 	  });
 
   } 
+
+  async reloadDepositData(){
+ 
+    //console.log(this.subject_name);
+    
+    const loading = await this.loadingController.create({
+        message: ''
+      });
+      
+         
+      var headers = new HttpHeaders();
+      headers.append('content-type', 'application/json; charset=utf-8');
+   
+      var data ={
+        
+        "userid": this.userId,
+        "id":this.stindex,
+        //this.password
+      }
+      this.http.post(host+'user-attendence-getbyid', JSON.stringify(data),{ headers: headers })
+      .subscribe((res:any) => {
+        console.log(res);
+       loading.dismiss();
+      if(res.status == true){
+        this.project=res.response_data[0].ua_projectid;
+        this.category=res.response_data[0].ua_category;
+        //this.subcategory=res.response_data[0].uwe_subcategory;
+       // this.expense_amount=res.response_data[0].uwe_amount;
+       this.start_time=res.response_data[0].ua_checkintime;
+        this.work_description=res.response_data[0].ua_description;
+        this.depositImage=res.response_data[0].ua_image;
+        this.address=res.response_data[0].ua_locationin;       
+       
+        }else{
+
+        this.alertController.create({
+         message: 'Something went wrong',
+          buttons: ['OK']
+        }).then(resalert => {
+    
+          resalert.present();
+    
+        });
+        loading.dismiss();
+        }
+      }, (err) => {
+        //console.log(err);
+        loading.dismiss();
+      });
+    
+    
+    
+
+} 
  onlyNumberKey(event:any) {
     return (event.charCode == 8 || event.charCode == 0) ? null : event.charCode >= 48 && event.charCode <= 57;
 }
@@ -177,7 +231,13 @@ importFile(event,index) {
   }
 
   async submit_mode(){
-	
+    const loading = await this.loadingController.create({
+      message: 'Sending...'
+    });
+    
+       
+    var headers = new HttpHeaders();
+    headers.append('content-type', 'application/json; charset=utf-8');
 if(!this.project){
   this.alertController.create({
     message:'Please select project',
@@ -219,9 +279,9 @@ else{
         project_text :splitted[0].project_id+' > '+splitted[0].sub_project_id,
 				category : this.category,
         category_text : this.category_text,
-				start_time :this.datePipe.transform(this.start_time, 'hh:mm'),
+				start_time :'',
         end_time :this.datePipe.transform(this.end_time, 'hh:mm'),
-        start_time24 :this.datePipe.transform(this.start_time, 'HH:mm'),
+        start_time24 :'',
         end_time24 :this.datePipe.transform(this.end_time, 'HH:mm'),
 			  start_timef :this.start_time,
         end_timef :this.end_time,
@@ -229,24 +289,46 @@ else{
         depositImage:this.depositImage,
         address:this.address,
         address2:this.address2,
+        ua_createdBy: this.userId,
+        id: this.stindex,
 			};
       //console.log(this.end_time);
+      await loading.present();
+	
+      //console.log(this.end_time);
 
-			let toBeUpload:any ='';
-
-			await this.storage.forEach( (value, key, index) => {
-				if(key == 'attendencebData'){
-          toBeUpload=value;
-          toBeUpload[this.stindex] = localarray;
-					
-				}
-			});
-     
-      	this.storage.set("attendencebData",toBeUpload).then((r) => {
-          this.storage.set("checkin",0).then((r) => {
-					this.navCtrl.back();
+			this.http.post(host+'user-attendence-postbyid', JSON.stringify(localarray),{ headers: headers })
+      .subscribe((res:any) => {
+       // console.log(res);
+       loading.dismiss();
+      if(res.status == true){
+            
+       this.alertController.create({
+         message: 'Successfully updated',
+          buttons: ['OK']
+        }).then(resalert => {
+    
+          resalert.present();
+    
         });
-			});
+        this.navCtrl.back();
+        }else{
+
+        this.alertController.create({
+         message: 'Something went wrong',
+          buttons: ['OK']
+        }).then(resalert => {
+    
+          resalert.present();
+    
+        });
+        loading.dismiss();
+        }
+      }, (err) => {
+        //console.log(err);
+        loading.dismiss();
+      });     
+			
 
     }
 		

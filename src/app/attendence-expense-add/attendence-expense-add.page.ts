@@ -28,7 +28,7 @@ declare var window: any;
   styleUrls: ['./attendence-expense-add.page.scss'],
 })
 export class AttendenceExpenseAddPage implements OnInit {
-  maxDate = new Date(new Date().setDate(new Date().getDate() + 1)).toISOString();
+  maxDate = new Date(new Date().setDate(new Date().getDate())).toISOString();
   minDate=new Date(new Date().setDate(new Date().getDate() - 10)).toISOString();
   minTime:any='';
   maxTime:any= '18:30';
@@ -110,7 +110,7 @@ export class AttendenceExpenseAddPage implements OnInit {
    }
 
   ngOnInit() {
- 
+  
     this.storage.create();
     //this.storage.set("mintime",'09:30');
   //  this.storage.clear();s
@@ -158,7 +158,13 @@ importFile(event,index) {
   }
 
   async submit_mode(){
-	
+    const loading = await this.loadingController.create({
+      message: 'Sending...'
+    });
+    
+       
+    var headers = new HttpHeaders();
+    headers.append('content-type', 'application/json; charset=utf-8');
 if(!this.project){
   this.alertController.create({
     message:'Please select project',
@@ -294,28 +300,60 @@ else{
         depositImage:this.depositImage,
         address:this.address,
         expense_date:this.expense_date,
-			
+        userid: this.userId,
 			};
-      //console.log(this.end_time);
-
-			let toBeUpload = [];
-
-			await this.storage.forEach( (value, key, index) => {
-				if(key == 'attendenceExpense'){
-					value.forEach(element => {
-						toBeUpload.push(element);
-           // toBeUpload.push(this.storage.get('attendenceData2'));
-					});
-				}
-			});
-			
-      
-			toBeUpload.push(localarray);
      
-      	this.storage.set("attendenceExpense",toBeUpload).then((r) => {
-         
-					this.navCtrl.back();
-			});
+
+      await loading.present();
+      
+      this.http.post(host+'user-work-expense-add', JSON.stringify(localarray),{ headers: headers })
+      .subscribe((res:any) => {
+       // console.log(res);
+       loading.dismiss();
+      if(res.status == true){
+       
+          
+        this.alertController.create({
+          message: 'Data save successful',
+           buttons: ['OK']
+         }).then(resalert => {
+     
+           resalert.present();
+     
+         });
+       	this.navCtrl.back();
+        
+   
+          this.project='';
+          this.category='';
+          this.category_text='';
+          this.subcategory='';
+         this.uwe_from='';
+          this.uwe_to='';
+          this.uwe_where='';
+          this.expense_amount='';
+				 this.work_description='';
+        this.depositImage='';
+        this.address='';
+        this.expense_date='';
+        }else{
+        this.alertController.create({
+         message: 'Something went wrong',
+          buttons: ['OK']
+        }).then(resalert => {
+    
+          resalert.present();
+    
+        });
+        loading.dismiss();
+        }
+      }, (err) => {
+        //console.log(err);
+        loading.dismiss();
+      });
+
+
+
 
     }
 		
@@ -394,7 +432,7 @@ async getcategoryList(){
     }
     this.http.post(host+'expense-category-get', JSON.stringify(data),{ headers: headers })
     .subscribe((res:any) => {
-      console.log(res);
+    //  console.log(res);
      loading.dismiss();
     if(res.status == true){
      
@@ -445,7 +483,7 @@ async getsubcategoryList(){
     }
     this.http.post(host+'expense-subcategory-get', JSON.stringify(data),{ headers: headers })
     .subscribe((res:any) => {
-      console.log(res);
+     // console.log(res);
      loading.dismiss();
     if(res.status == true){
      
@@ -548,7 +586,7 @@ selectChangesub(id) {
       this.nativeGeocoder.reverseGeocode(resp.coords.latitude, resp.coords.longitude, options)
 			.then((result: NativeGeocoderResult[]) => {
 				// let data = {'pincode':result[0].postalCode, 'userId':10, 'type':'location', 'lat':this.latitude, 'lng': this.longitude}
-       // console.log(result[0]);
+        //console.log(result);
         this.address=result[0].thoroughfare+','+result[0].postalCode+','+result[0].subAdministrativeArea
         +','+result[0].administrativeArea +','+result[0].countryName;
 			}).catch((error: any) => console.log(error));

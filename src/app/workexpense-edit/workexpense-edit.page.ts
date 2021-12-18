@@ -99,17 +99,10 @@ minTime:any='';
      
       quantities: this.fb.array([]) ,
     });
-   this.storage.get("genuserDetails").then(val=>{
-      if(val){
-        this.userDetails = val;
-        this.userId=val.ID;
-        }
-        });
+   
         this.stindex = this.route.snapshot.paramMap.get('id');
         this.isToggled = false;
-        this.getprojectList();
-        this.getcategoryList();
-      
+       
    }
 
   ngOnInit() {
@@ -119,7 +112,15 @@ minTime:any='';
   //  this.storage.clear();s
   }
   ionViewWillEnter(){
-   
+   this.storage.get("genuserDetails").then(val=>{
+      if(val){
+        this.userDetails = val;
+        this.userId=val.ID;
+         this.getprojectList();
+        this.getcategoryList();
+      
+        }
+        });
   this.reloadDepositData();
 this.getLocation();
   }
@@ -128,7 +129,7 @@ this.getLocation();
 }
 
 importFile(event,index) {
-  console.log(event);
+  //console.log(event);
     if (event.target.files && event.target.files.length > 0) {
       let files = event.target.files || event.dataTransfer.files;
       if (!files.length)
@@ -280,7 +281,7 @@ else{
       }
       this.http.post(host+'user-project-get', JSON.stringify(data),{ headers: headers })
       .subscribe((res:any) => {
-        console.log(res);
+        //console.log(res);
        loading.dismiss();
       if(res.status == true){
        
@@ -331,7 +332,7 @@ async getcategoryList(){
     }
     this.http.post(host+'expense-category-get', JSON.stringify(data),{ headers: headers })
     .subscribe((res:any) => {
-      console.log(res);
+      //console.log(res);
      loading.dismiss();
     if(res.status == true){
      
@@ -382,7 +383,7 @@ async getsubcategoryList(){
     }
     this.http.post(host+'expense-subcategory-get', JSON.stringify(data),{ headers: headers })
     .subscribe((res:any) => {
-      console.log(res);
+      //console.log(res);
      loading.dismiss();
     if(res.status == true){
      

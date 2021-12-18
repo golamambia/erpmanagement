@@ -29,7 +29,7 @@ declare var window: any;
   styleUrls: ['./attendence-expense-edit.page.scss'],
 })
 export class AttendenceExpenseEditPage implements OnInit {
-  maxDate = new Date(new Date().setDate(new Date().getDate() + 1)).toISOString();
+  maxDate = new Date(new Date().setDate(new Date().getDate())).toISOString();
   minDate=new Date(new Date().setDate(new Date().getDate() - 10)).toISOString();
 minTime:any='';
   maxTime:any= '18:30';

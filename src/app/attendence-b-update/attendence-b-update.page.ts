@@ -124,35 +124,60 @@ minTime:any='';
    this.reloadDepositData();
 //this.getLocation();
   }
-   async reloadDepositData(){
-    //let d
-	await this.storage.forEach( (value, key, index) => {
-      if(key == 'attendencebData'){
-              
-        value.forEach((element,index) => {
-      if(index==this.stindex){
-        this.attendenceData = element;
-        this.projectid=element.projectid;
-        this.project=element.project;
-        this.project_text=element.project_text;
-        this.category=element.category;
-        this.category_text=element.category_text,
-        this.start_time=element.start_timef;
-        this.end_time=element.end_timef;
-        this.work_description=element.work_description;
-        this.depositImage=element.depositImage;
-        this.address=element.address;
-        this.address2=element.address2;
-        //console.log(element.project);
-      }
-     
+  async reloadDepositData(){
+ 
+    //console.log(this.subject_name);
+    
+    const loading = await this.loadingController.create({
+        message: ''
       });
+      
+         
+      var headers = new HttpHeaders();
+      headers.append('content-type', 'application/json; charset=utf-8');
+   
+      var data ={
+        
+        "userid": this.userId,
+        "id":this.stindex,
+        //this.password
       }
-		 
-     
-	  });
+      this.http.post(host+'user-attendence-getbyid', JSON.stringify(data),{ headers: headers })
+      .subscribe((res:any) => {
+        //console.log(res);
+       loading.dismiss();
+      if(res.status == true){
+        this.project=res.response_data[0].ua_projectid;
+        this.category=res.response_data[0].ua_category;
+        //this.subcategory=res.response_data[0].uwe_subcategory;
+       // this.expense_amount=res.response_data[0].uwe_amount;
+       this.start_time=res.response_data[0].ua_checkintime;
+       this.end_time=res.response_data[0].ua_checkouttime;
+        this.work_description=res.response_data[0].ua_description;
+        this.depositImage=res.response_data[0].ua_image;
+        this.address=res.response_data[0].ua_locationin;       
+        this.address2=res.response_data[0].ua_locationout;
+        }else{
 
-  } 
+        this.alertController.create({
+         message: 'Something went wrong',
+          buttons: ['OK']
+        }).then(resalert => {
+    
+          resalert.present();
+    
+        });
+        loading.dismiss();
+        }
+      }, (err) => {
+        //console.log(err);
+        loading.dismiss();
+      });
+    
+    
+    
+
+} 
  onlyNumberKey(event:any) {
     return (event.charCode == 8 || event.charCode == 0) ? null : event.charCode >= 48 && event.charCode <= 57;
 }
@@ -179,7 +204,13 @@ importFile(event,index) {
   }
 
   async submit_mode(){
-	
+    const loading = await this.loadingController.create({
+      message: 'Sending...'
+    });
+    
+       
+    var headers = new HttpHeaders();
+    headers.append('content-type', 'application/json; charset=utf-8');
 if(!this.project){
   this.alertController.create({
     message:'Please select project',
@@ -213,42 +244,64 @@ else{
 
 
   var splitted = this.getDropDownText2(this.project, this.projecy_list); 
-  //console.log(splitted)
-  let localarray = {
-    projectid : splitted[0].sub_project_id,
-    project : this.project,
-   
-    project_text :splitted[0].project_id+' > '+splitted[0].sub_project_id,
+      //console.log(splitted)
+			let localarray = {
+        projectid : splitted[0].sub_project_id,
+				project : this.project,
+        project_full : this.project,
+        project_text :splitted[0].project_id+' > '+splitted[0].sub_project_id,
 				category : this.category,
-        category_text:this.category_text,
-				start_time :this.datePipe.transform(this.start_time, 'hh:mm'),
-        end_time :this.datePipe.transform(this.end_time, 'hh:mm'),
-        start_time24 :this.datePipe.transform(this.start_time, 'HH:mm'),
-        end_time24 :this.datePipe.transform(this.end_time, 'HH:mm'),
+        category_text : this.category_text,
+				start_time :'',
+        end_time :'',
+        start_time24 :'',
+        end_time24 :'',
 			  start_timef :this.start_time,
         end_timef :this.end_time,
 			  work_description : this.work_description,
         depositImage:this.depositImage,
         address:this.address,
         address2:this.address2,
+        ua_createdBy: this.userId,
+        id: this.stindex,
 			};
       //console.log(this.end_time);
+      await loading.present();
+	
+      //console.log(this.end_time);
 
-			let toBeUpload:any ='';
+			this.http.post(host+'user-attendence-postbyid2', JSON.stringify(localarray),{ headers: headers })
+      .subscribe((res:any) => {
+       // console.log(res);
+       loading.dismiss();
+      if(res.status == true){
+            
+       this.alertController.create({
+         message: 'Successfully updated',
+          buttons: ['OK']
+        }).then(resalert => {
+    
+          resalert.present();
+    
+        });
+        this.navCtrl.back();
+        }else{
 
-			await this.storage.forEach( (value, key, index) => {
-				if(key == 'attendencebData'){
-          toBeUpload=value;
-          toBeUpload[this.stindex] = localarray;
-					
-				}
-			});
-     
-      	this.storage.set("attendencebData",toBeUpload).then((r) => {
-         
-					this.navCtrl.back();
-       
-			});
+        this.alertController.create({
+         message: 'Something went wrong',
+          buttons: ['OK']
+        }).then(resalert => {
+    
+          resalert.present();
+    
+        });
+        loading.dismiss();
+        }
+      }, (err) => {
+        //console.log(err);
+        loading.dismiss();
+      });     
+			
 
     }
 		

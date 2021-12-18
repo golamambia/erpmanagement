@@ -40,18 +40,18 @@
                       <ion-label class="nomargin">  
                           <ion-row>
                             <ion-col size="8">
-                              <h2 class="list-title"><span class="smspan">Project: </span><br>{{inneritem.ua_project}}</h2>
+                              <h2 class="list-title"><span class="smspan">Project: </span><br>{{inneritem.project_text}}</h2>
                             </ion-col>
                             <ion-col size="4">
-                              <h2 class="list-title"><span class="smspan"> Time: </span><br>{{inneritem.ua_checkintime}} <span *ngIf="inneritem.ua_checkouttime" style="color: black;"> - {{inneritem.ua_checkouttime}}</span> </h2>
+                              <h2 class="list-title"><span class="smspan"> Time: </span><br>{{inneritem.start_time}} <span *ngIf="inneritem.end_time" style="color: black;"> - {{inneritem.end_time}}</span> </h2>
                             </ion-col>
                             
                           </ion-row>
                         </ion-label>
-                        <a *ngIf="inneritem.ua_checkouttime" slot="end" (click)="edit_attendence2(inneritem.ua_id,inneritem)"><ion-icon name="create-outline"></ion-icon></a>
-                        <a *ngIf="!inneritem.ua_checkouttime" slot="end" (click)="edit_attendence(inneritem.ua_id,inneritem)"> <ion-icon name="chevron-forward-outline"></ion-icon></a>
-                        <a  style="margin-left: 22px;margin-right: -15px;"  slot="end" (click)="remove_expense(inneritem.ua_id,0)">  <ion-icon name="close-circle-outline"></ion-icon></a>
-                        
+                        <a *ngIf="inneritem.end_time" slot="end" (click)="edit_attendence2(i,inneritem)"><ion-icon name="create-outline"></ion-icon></a>
+                        <a *ngIf="!inneritem.end_time" slot="end" (click)="edit_attendence(i,inneritem)"> <ion-icon name="chevron-forward-outline"></ion-icon></a>
+                        <a *ngIf="inneritem.end_time" style="margin-left: 22px;margin-right: -15px;"  slot="end" (click)="remove_attendence(i,0)">  <ion-icon name="close-circle-outline"></ion-icon></a>
+                        <a *ngIf="!inneritem.end_time" style="margin-left: 22px;margin-right: -15px;"  slot="end" (click)="remove_attendence(i,1)">  <ion-icon name="close-circle-outline"></ion-icon></a>
                     </ion-item>
                   </ion-item-sliding>
                 </div>
@@ -110,14 +110,14 @@
             </ion-row>
 
           </ion-grid>
-        <!--   <div *ngIf="attendence_status">
+          <div *ngIf="attendence_status">
           <div padding *ngIf="depositData.length && !checkin">
             <ion-button  size="large" (click)="submit()"  expand="block">Final Submit</ion-button>
           </div>
           <div padding *ngIf="(!depositData.length && checkin==0) || (depositData.length && checkin>0)">
             <ion-button  size="large"  [disabled]="true"  expand="block">Final Submit</ion-button>
           </div>
-        </div> -->
+        </div>
 
         </ion-col>
       </ion-row>

@@ -144,13 +144,7 @@ importFile(event,index) {
   }
 
   async submit_mode(){
-    const loading = await this.loadingController.create({
-      message: 'Sending...'
-    });
-    
-       
-    var headers = new HttpHeaders();
-    headers.append('content-type', 'application/json; charset=utf-8');
+	
 if(!this.project){
   this.alertController.create({
     message:'Please select project',
@@ -170,7 +164,16 @@ if(!this.project){
 
    });
 }
+// else if(!this.work_description){
+//   this.alertController.create({
+//     message:'Please enter description',
+//      buttons: ['OK']
+//    }).then(resalert => {
 
+//      resalert.present();
+
+//    });
+// }
 else{
 
       var splitted = this.getDropDownText2(this.project, this.projecy_list); 
@@ -192,52 +195,28 @@ else{
         depositImage:this.depositImage,
         address:this.address,
         address2:this.address2,
-        ua_createdBy: this.userId,
 			};
       //console.log(this.end_time);
 
+			let toBeUpload = [];
 
-      loading.present();
-     
-      this.http.post(host+'user-attendence-add', JSON.stringify(localarray),{ headers: headers })
-      .subscribe((res:any) => {
-       // console.log(res);
-       loading.dismiss();
-      if(res.status == true){
+			await this.storage.forEach( (value, key, index) => {
+				if(key == 'attendencebData'){
+					value.forEach(element => {
+						toBeUpload.push(element);
+           // toBeUpload.push(this.storage.get('attendenceData2'));
+					});
+				}
+			});
+			
       
-         
-        this.alertController.create({
-          message: 'Attendence successful',
-           buttons: ['OK']
-         }).then(resalert => {
+			toBeUpload.push(localarray);
      
-           resalert.present();
-     
-         });
-       	this.navCtrl.back();
-        this.project='';
-       this.category='';
-      this.category_text='';
-       this.start_time='';
-        this.work_description='';
-       this.depositImage='';
-       this.address='';
-        this.address2='';
-        }else{
-        this.alertController.create({
-         message: 'Something went wrong',
-          buttons: ['OK']
-        }).then(resalert => {
-    
-          resalert.present();
-    
+      	this.storage.set("attendencebData",toBeUpload).then((r) => {
+          this.storage.set("checkin",1).then((r) => {
+					this.navCtrl.back();
         });
-        loading.dismiss();
-        }
-      }, (err) => {
-        //console.log(err);
-        loading.dismiss();
-      });
+			});
 
     }
 		

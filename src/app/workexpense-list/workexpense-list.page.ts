@@ -95,6 +95,7 @@ export class WorkexpenseListPage implements OnInit {
 }
 
   ionViewWillEnter(){
+  
    if(this.userId){
       this.getprojectList();
    this.getcategoryList();
