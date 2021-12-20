@@ -205,7 +205,7 @@ else{
        loading.dismiss();
       if(res.status == true){
       
-         
+        this.storage.set("checkin",1);
         this.alertController.create({
           message: 'Attendence successful',
            buttons: ['OK']
@@ -385,7 +385,7 @@ async getcategoryList(){
 			.then((result: NativeGeocoderResult[]) => {
 				// let data = {'pincode':result[0].postalCode, 'userId':10, 'type':'location', 'lat':this.latitude, 'lng': this.longitude}
        // console.log(result[0]);
-        this.address=result[0].thoroughfare+','+result[0].postalCode+','+result[0].subAdministrativeArea
+        this.address=result[0].subLocality+','+result[0].locality+','+result[0].postalCode+','+result[0].subAdministrativeArea
         +','+result[0].administrativeArea +','+result[0].countryName;
 			}).catch((error: any) => console.log(error));
      }).catch((error) => {

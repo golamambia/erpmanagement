@@ -117,11 +117,14 @@ minTime:any='';
       if(val){
         this.userDetails = val;
         this.userId=val.ID;
-        this.getprojectList();
-        this.getcategoryList();
+        //this.getprojectList();
+        //this.getcategoryList();
+        this.reloadDepositData();
+        }else{
+          this.navCtrl.navigateForward('login');
         }
       });
-   this.reloadDepositData();
+  
 //this.getLocation();
   }
   async reloadDepositData(){
@@ -147,6 +150,8 @@ minTime:any='';
         //console.log(res);
        loading.dismiss();
       if(res.status == true){
+        this.category_list=res.category_list;
+        this.projecy_list=res.project_list;
         this.project=res.response_data[0].ua_projectid;
         this.category=res.response_data[0].ua_category;
         //this.subcategory=res.response_data[0].uwe_subcategory;
@@ -158,7 +163,8 @@ minTime:any='';
         this.address=res.response_data[0].ua_locationin;       
         this.address2=res.response_data[0].ua_locationout;
         }else{
-
+          this.category_list=res.category_list;
+        this.projecy_list=res.project_list;
         this.alertController.create({
          message: 'Something went wrong',
           buttons: ['OK']

@@ -77,12 +77,7 @@ export class WorkexpenseListPage implements OnInit {
      
       quantities: this.fb.array([]) ,
     });
-   this.storage.get("genuserDetails").then(val=>{
-      if(val){
-        this.userDetails = val;
-        this.userId=val.ID;
-        }
-        });
+   
    }
 
   ngOnInit() {
@@ -96,12 +91,18 @@ export class WorkexpenseListPage implements OnInit {
 
   ionViewWillEnter(){
   
-   if(this.userId){
-      this.getprojectList();
+
+   this.storage.get("genuserDetails").then(val=>{
+      if(val){
+        this.userDetails = val;
+        this.userId=val.ID;
+            this.getprojectList();
    this.getcategoryList();
    this.reloadDepositData();
-    }
-   
+        }else{
+        this.navCtrl.navigateForward('login');
+      }
+        });
   }
   ionViewDidEnter(){
   //  this.storage.clear();

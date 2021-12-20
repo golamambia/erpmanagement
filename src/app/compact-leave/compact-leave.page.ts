@@ -99,12 +99,7 @@ export class CompactLeavePage implements OnInit {
      
       quantities: this.fb.array([]) ,
     });
-   this.storage.get("genuserDetails").then(val=>{
-      if(val){
-        this.userDetails = val;
-        this.userId=val.ID;
-        }
-        });
+   
         //this.clientID = this.route.snapshot.paramMap.get('clientName');
        // console.log(this.clientID);
        this.isToggled = false;
@@ -118,8 +113,15 @@ export class CompactLeavePage implements OnInit {
   //  this.storage.clear();s
   }
   ionViewWillEnter(){
+    this.storage.get("genuserDetails").then(val=>{
+      if(val){
+        this.userDetails = val;
+        this.userId=val.ID;
+        this.getAmount();
+        }
+        });
  // this.getcashMode();
-this.getAmount();
+
   }
  onlyNumberKey(event:any) {
     return (event.charCode == 8 || event.charCode == 0) ? null : event.charCode >= 48 && event.charCode <= 57;

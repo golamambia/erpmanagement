@@ -75,12 +75,7 @@ export class LeavePagePage implements OnInit {
      
       quantities: this.fb.array([]) ,
     });
-   this.storage.get("genuserDetails").then(val=>{
-      if(val){
-        this.userDetails = val;
-       this.userId=val.ID;
-        }
-        });
+  
    }
 
   ngOnInit() {
@@ -93,7 +88,16 @@ export class LeavePagePage implements OnInit {
 }
 
   ionViewWillEnter(){
-    this.reloadDepositData();
+     this.storage.get("genuserDetails").then(val=>{
+      if(val){
+        this.userDetails = val;
+       this.userId=val.ID;
+        this.reloadDepositData();
+        }else{
+        this.navCtrl.navigateForward('login');
+      }
+        });
+   
   }
   ionViewDidEnter(){
   //  this.storage.clear();

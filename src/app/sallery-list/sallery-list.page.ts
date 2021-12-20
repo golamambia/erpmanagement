@@ -73,12 +73,7 @@ export class SalleryListPage implements OnInit {
      
       quantities: this.fb.array([]) ,
     });
-   this.storage.get("genuserDetails").then(val=>{
-      if(val){
-        this.userDetails = val;
-        this.userId=val.ID;
-        }
-        });
+   
    }
 
   ngOnInit() {
@@ -91,7 +86,14 @@ export class SalleryListPage implements OnInit {
 }
 
   ionViewWillEnter(){
-    this.reloadDepositData();
+   
+    this.storage.get("genuserDetails").then(val=>{
+      if(val){
+        this.userDetails = val;
+        this.userId=val.ID;
+         this.reloadDepositData();
+        }
+        });
   }
   ionViewDidEnter(){
   //  this.storage.clear();

@@ -116,11 +116,13 @@ export class MedicalLeavePage implements OnInit {
       if(val){
         this.userDetails = val;
         this.userId=val.ID;
-
-        }
+this.getAmount();
+        }else{
+        this.navCtrl.navigateForward('login');
+      }
       });
  // this.getcashMode();
-this.getAmount();
+
   }
  onlyNumberKey(event:any) {
     return (event.charCode == 8 || event.charCode == 0) ? null : event.charCode >= 48 && event.charCode <= 57;

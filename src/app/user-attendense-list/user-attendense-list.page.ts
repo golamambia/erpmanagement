@@ -72,12 +72,7 @@ export class UserAttendenseListPage implements OnInit {
      
       quantities: this.fb.array([]) ,
     });
-   this.storage.get("genuserDetails").then(val=>{
-      if(val){
-        this.userDetails = val;
-        this.userId=val.ID;
-        }
-        });
+   
    }
 
   ngOnInit() {
@@ -90,12 +85,16 @@ export class UserAttendenseListPage implements OnInit {
 }
 
   ionViewWillEnter(){
-     if(this.userId){
-      this.getprojectList();
-  
-    }
+    
+   this.storage.get("genuserDetails").then(val=>{
+      if(val){
+        this.userDetails = val;
+        this.userId=val.ID;
+        this.getprojectList();
+         this.reloadDepositData();
+        }
+        });
    
-    this.reloadDepositData();
   }
   ionViewDidEnter(){
   //  this.storage.clear();

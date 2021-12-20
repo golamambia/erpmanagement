@@ -47,6 +47,7 @@ constructor(
     this.timestamp = Date.now();
    }
    ionViewWillEnter(){
+
     this.batteryStatus.onChange().subscribe(status => {
       //console.log('batteryStatus', status.level);
       // if(this.user_id != 0){
@@ -63,6 +64,14 @@ constructor(
 // }
    this.getLocation();
    this.checkPermission();
+   this.storage.get("genuserDetails").then(val=>{
+    if(val){
+     
+      }else{
+        this.navCtrl.navigateForward('login');
+      }
+    });
+
    }
 
 

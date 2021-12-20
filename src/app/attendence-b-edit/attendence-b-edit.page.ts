@@ -115,11 +115,14 @@ minTime:any='';
       if(val){
         this.userDetails = val;
         this.userId=val.ID;
-        this.getprojectList();
-        this.getcategoryList();
+        //this.getprojectList();
+        //this.getcategoryList();
+        this.reloadDepositData();
+        }else{
+          this.navCtrl.navigateForward('login');
         }
       });
-   this.reloadDepositData();
+  
 this.getLocation();
   }
    async reloadDepositData2(){
@@ -172,9 +175,11 @@ this.getLocation();
       }
       this.http.post(host+'user-attendence-getbyid', JSON.stringify(data),{ headers: headers })
       .subscribe((res:any) => {
-        console.log(res);
+        //console.log(res);
        loading.dismiss();
       if(res.status == true){
+        this.category_list=res.category_list;
+        this.projecy_list=res.project_list;
         this.project=res.response_data[0].ua_projectid;
         this.category=res.response_data[0].ua_category;
         //this.subcategory=res.response_data[0].uwe_subcategory;
@@ -183,9 +188,10 @@ this.getLocation();
         this.work_description=res.response_data[0].ua_description;
         this.depositImage=res.response_data[0].ua_image;
         this.address=res.response_data[0].ua_locationin;       
-       
+        
         }else{
-
+          this.category_list=res.category_list;
+        this.projecy_list=res.project_list;
         this.alertController.create({
          message: 'Something went wrong',
           buttons: ['OK']
@@ -302,7 +308,8 @@ else{
        // console.log(res);
        loading.dismiss();
       if(res.status == true){
-            
+        this.storage.set("checkin",0);
+        
        this.alertController.create({
          message: 'Successfully updated',
           buttons: ['OK']

@@ -98,12 +98,7 @@ export class GeneraleLeavePage implements OnInit {
      
       quantities: this.fb.array([]) ,
     });
-   this.storage.get("genuserDetails").then(val=>{
-      if(val){
-        this.userDetails = val;
-        this.userId=val.ID;
-        }
-        });
+   
         //this.clientID = this.route.snapshot.paramMap.get('clientName');
        // console.log(this.clientID);
        this.isToggled = false;
@@ -117,8 +112,17 @@ export class GeneraleLeavePage implements OnInit {
   //  this.storage.clear();s
   }
   ionViewWillEnter(){
+    this.storage.get("genuserDetails").then(val=>{
+      if(val){
+        this.userDetails = val;
+        this.userId=val.ID;
+        this.getAmount();
+
+        }else{
+        this.navCtrl.navigateForward('login');
+      }
+        });
  // this.getcashMode();
-this.getAmount();
   }
  onlyNumberKey(event:any) {
     return (event.charCode == 8 || event.charCode == 0) ? null : event.charCode >= 48 && event.charCode <= 57;

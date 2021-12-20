@@ -79,7 +79,7 @@ logout(){
     this.storage.remove("genuserDetails");
     //.then(() => { this.events.publish('user:login', false) });
     this.userDetails = null;
-    this.navCtrl.navigateForward('home');
+    this.navCtrl.navigateForward('login');
      this.menu.close();
      //this.events.publish('user:logout', true);
   }

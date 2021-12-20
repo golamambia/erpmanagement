@@ -116,12 +116,14 @@ minTime:any='';
       if(val){
         this.userDetails = val;
         this.userId=val.ID;
-         this.getprojectList();
-        this.getcategoryList();
-      
-        }
+         //this.getprojectList();
+        //this.getcategoryList();
+       this.reloadDepositData();
+        }else{
+        this.navCtrl.navigateForward('login');
+      }
         });
-  this.reloadDepositData();
+ 
 this.getLocation();
   }
  onlyNumberKey(event:any) {
@@ -469,17 +471,26 @@ selectChangesub(id) {
        // console.log(res);
        loading.dismiss();
       if(res.status == true){
+
+        this.category_list=res.category_list;
+
+        this.projecy_list=res.project_list;
+        this.subcategory_list=res.subcategory_list;
         this.project=res.response_data[0].uwe_project;
-        this.category=res.response_data[0].uwe_category;
-        this.subcategory=res.response_data[0].uwe_subcategory;
+         this.category=res.response_data[0].uwe_category;
+        // if(res.response_data[0].uwe_category){
+        //   this.getsubcategoryList();
+        // }
+
         this.expense_amount=res.response_data[0].uwe_amount;
       
         this.work_description=res.response_data[0].uwe_description;
         this.depositImage=res.response_data[0].uwe_image;
         this.address=res.response_data[0].uwe_locationin;       
-       
+       this.subcategory=res.response_data[0].uwe_subcategory;
         }else{
-
+      this.category_list=res.category_list;
+        this.projecy_list=res.project_list;
         this.alertController.create({
          message: 'Something went wrong',
           buttons: ['OK']

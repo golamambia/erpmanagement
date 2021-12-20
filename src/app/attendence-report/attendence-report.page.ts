@@ -79,12 +79,7 @@ export class AttendenceReportPage implements OnInit {
      
       quantities: this.fb.array([]) ,
     });
-   this.storage.get("genuserDetails").then(val=>{
-      if(val){
-        this.userDetails = val;
-        this.userId=val.ID;
-        }
-        });
+   
    }
 
   ngOnInit() {
@@ -97,8 +92,17 @@ export class AttendenceReportPage implements OnInit {
 }
 
   ionViewWillEnter(){
-    this.getprojectList();
+    this.storage.get("genuserDetails").then(val=>{
+      if(val){
+        this.userDetails = val;
+        this.userId=val.ID;
+        this.getprojectList();
     this.reloadDepositData();
+        }else{
+        this.navCtrl.navigateForward('login');
+      }
+        });
+    
   }
   ionViewDidEnter(){
   //  this.storage.clear();

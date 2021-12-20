@@ -32,7 +32,13 @@ export class LoginPage implements OnInit {
     private menu: MenuController,
     public events: Events,
     ) { }
-
+    ionViewWillEnter(){
+      this.storage.get("genuserDetails").then(val=>{
+        if(val){
+          this.navCtrl.navigateForward('home');
+          }
+        });
+    }
   ngOnInit() {
   	this.storage.create();
   }

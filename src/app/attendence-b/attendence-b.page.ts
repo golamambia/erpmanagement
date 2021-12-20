@@ -205,25 +205,35 @@ importFile(event,index) {
 
   }
   ionViewWillEnter(){
-    this.reloadDepositData();
+   // this.reloadDepositData();
     //this.storage.clear();
 
   this.storage.get("genuserDetails").then(val=>{
     if(val){
       this.userDetails = val;
       this.userId=val.ID;
-      this.getUser();
+     // this.getUser();
+      this.getData(); 
+      }else{
+        this.navCtrl.navigateForward('login');
       }
       });
-      this.getData(); 
+      
       this.checkin_check();
   }
 
   ionViewDidEnter(){
     this.checkin_check();
-    this.reloadDepositData();
-    //this.getData(); 
     
+    //this.getData(); 
+    this.storage.get("genuserDetails").then(val=>{
+      if(val){
+        this.userDetails = val;
+        this.userId=val.ID;
+       // this.getUser();
+       this.reloadDepositData();
+        }
+        });
     
   }
   gotorequestpage(){
@@ -300,7 +310,7 @@ importFile(event,index) {
         headers.append('content-type', 'application/json; charset=utf-8');
       //this.submitted = true;
       
-         await loading.present();
+         //await loading.present();
         //var data ={}
         var data ={
           
@@ -311,7 +321,7 @@ importFile(event,index) {
         }
         this.http.post(host+'user-attendence-get', JSON.stringify(data),{ headers: headers })
         .subscribe((res:any) => {
-          console.log(res);
+          //console.log(res);
          loading.dismiss();
         if(res.status == true){
          
@@ -436,18 +446,25 @@ importFile(event,index) {
     var data ={
       
       "userid": this.userId,
-      
+      "search_project":'',
+      "search_date":this.datePipe.transform(this.today_date, 'yyyy-MM-dd'),
       
       //this.password
     }
+    await loading.present();
     this.http.post(host+'assign-leave-check', JSON.stringify(data),{ headers: headers })
     .subscribe((res:any) => {
      // console.log(res);
      loading.dismiss();
     if(res.status == true){
-       
+      this.depositData=res.get_attendance;
       this.holiday_check=res.holiday_leave;
       this.assign_check=res.assign_leave;
+      if(res.user_details.log_status){
+        this.checkinFirststaus=1;
+       }else{
+        this.checkinFirststaus=0;
+       }
       if(this.holiday_check.length){
         
         if(this.assign_check.length){
@@ -464,7 +481,7 @@ importFile(event,index) {
          
       }else{
       
-    
+        this.depositData=res.get_attendance;
       loading.dismiss();
       }
     }, (err) => {

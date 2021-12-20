@@ -157,7 +157,9 @@ export class AttendenceExpensePage implements OnInit {
         this.userDetails = val;
         this.userId=val.ID;
        
-        }
+        }else{
+        this.navCtrl.navigateForward('login');
+      }
       });
   }
   ionViewDidEnter(){
