@@ -71,6 +71,7 @@ minTime:any='';
  address2:any='';
  current_address:any='';
  depositImage:any = "";
+ depositImagenw:any="";
  isToggled: boolean;
  stindex:any='';
  attendenceData:any='';
@@ -159,7 +160,7 @@ minTime:any='';
        this.start_time=res.response_data[0].ua_checkintime;
        this.end_time=res.response_data[0].ua_checkouttime;
         this.work_description=res.response_data[0].ua_description;
-        this.depositImage=res.response_data[0].ua_image;
+        this.depositImage=image_path+res.response_data[0].ua_image;
         this.address=res.response_data[0].ua_locationin;       
         this.address2=res.response_data[0].ua_locationout;
         }else{
@@ -265,7 +266,7 @@ else{
 			  start_timef :this.start_time,
         end_timef :this.end_time,
 			  work_description : this.work_description,
-        depositImage:this.depositImage,
+        depositImage2:this.depositImagenw,
         address:this.address,
         address2:this.address2,
         ua_createdBy: this.userId,
@@ -327,6 +328,7 @@ else{
 			
 			this.base64.encodeFile(imageData).then((base64File: string) => {
 				this.depositImage = base64File;
+        this.depositImagenw = base64File;
 				// this.form.controls.ddImage = this.ddImage;				
 			}, (err) => {
 			//	this.showToastWithCloseButton("Image capture failed. Please try again.");

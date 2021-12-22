@@ -78,7 +78,15 @@
       <ion-label position="stacked">Image</ion-label>
       <ion-input type="file" accept="image/*" id="upload"  (ionChange)="imageFilePath_change($event)"></ion-input>
     </ion-item> -->
-    <ion-row >
+    <ion-item >
+    
+      <ion-label position="stacked">Have proof document?</ion-label>
+      <ion-select interface="popover" [(ngModel)]="proof_doc" [ngModelOptions]="{standalone: true}">
+        <ion-select-option  value="yes">Yes</ion-select-option>
+        <ion-select-option  value="no">No</ion-select-option>
+      </ion-select>
+        </ion-item>
+    <ion-row  *ngIf="proof_doc=='yes'">
       <ion-col size="10">
         <div *ngIf="isToggled == false">
         <ion-button color="primary"  (click)="deposit_slip_image()" expand="block">

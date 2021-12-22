@@ -70,6 +70,7 @@ minTime:any='';
  address2:any='';
  current_address:any='';
  depositImage:any = "";
+ depositImagenw:any = "";
  isToggled: boolean;
  stindex:any='';
  attendenceData:any='';
@@ -125,35 +126,7 @@ minTime:any='';
   
 this.getLocation();
   }
-   async reloadDepositData2(){
-    //let d
-	await this.storage.forEach( (value, key, index) => {
-      if(key == 'attendencebData'){
-              
-        value.forEach((element,index) => {
-      if(index==this.stindex){
-        //this.attendenceData = element;
-        this.projectid=element.projectid;
-        this.project=element.project;
-        this.project_text=element.project_text;
-        this.category=element.category;
-        this.category_text=element.category_text,
-        this.start_time=element.start_timef;
-        //this.end_time=element.end_timef;
-        this.work_description=element.work_description;
-        this.depositImage=element.depositImage;
-        this.address=element.address;
-        
-       // console.log(element.project);
-      }
-     
-      });
-      }
-		 
-     
-	  });
 
-  } 
 
   async reloadDepositData(){
  
@@ -186,7 +159,7 @@ this.getLocation();
        // this.expense_amount=res.response_data[0].uwe_amount;
        this.start_time=res.response_data[0].ua_checkintime;
         this.work_description=res.response_data[0].ua_description;
-        this.depositImage=res.response_data[0].ua_image;
+        this.depositImage=image_path+res.response_data[0].ua_image;
         this.address=res.response_data[0].ua_locationin;       
         
         }else{
@@ -292,7 +265,7 @@ else{
 			  start_timef :this.start_time,
         end_timef :this.end_time,
 			  work_description : this.work_description,
-        depositImage:this.depositImage,
+        depositImage2:this.depositImagenw,
         address:this.address,
         address2:this.address2,
         ua_createdBy: this.userId,
@@ -355,6 +328,7 @@ else{
 			
 			this.base64.encodeFile(imageData).then((base64File: string) => {
 				this.depositImage = base64File;
+        this.depositImagenw = base64File;
 				// this.form.controls.ddImage = this.ddImage;				
 			}, (err) => {
 			//	this.showToastWithCloseButton("Image capture failed. Please try again.");

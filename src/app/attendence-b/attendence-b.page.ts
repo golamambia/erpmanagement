@@ -207,7 +207,7 @@ importFile(event,index) {
   ionViewWillEnter(){
    // this.reloadDepositData();
     //this.storage.clear();
-
+    //this.storage.set("checkin",0);
   this.storage.get("genuserDetails").then(val=>{
     if(val){
       this.userDetails = val;
@@ -231,7 +231,8 @@ importFile(event,index) {
         this.userDetails = val;
         this.userId=val.ID;
        // this.getUser();
-       this.reloadDepositData();
+       this.getData();
+       //this.reloadDepositData();
         }
         });
     
@@ -317,6 +318,7 @@ importFile(event,index) {
           "userid": this.userId,
           "search_project":'',
           "search_date":this.datePipe.transform(this.today_date, 'yyyy-MM-dd'),
+          "checkout":'1'
           //this.password
         }
         this.http.post(host+'user-attendence-get', JSON.stringify(data),{ headers: headers })
@@ -448,6 +450,7 @@ importFile(event,index) {
       "userid": this.userId,
       "search_project":'',
       "search_date":this.datePipe.transform(this.today_date, 'yyyy-MM-dd'),
+      "checkout":'1'
       
       //this.password
     }
@@ -575,7 +578,7 @@ importFile(event,index) {
   
   
   }
-  async remove_expense(id){
+  async remove_expense(id,checkin:number){
     const loading = await this.loadingController.create({
       message: ''
     });
@@ -613,6 +616,11 @@ importFile(event,index) {
              // console.log(res);
              loading.dismiss();
             if(res.status == true){
+              if(checkin==1){
+                this.storage.set("checkin",0);
+                this.checkin=0;
+              }
+              
               this.reloadDepositData();
              this.alertController.create({
              

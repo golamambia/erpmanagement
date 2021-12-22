@@ -29,7 +29,7 @@ declare var window: any;
   styleUrls: ['./workexpense-edit.page.scss'],
 })
 export class WorkexpenseEditPage implements OnInit {
-
+image_path=image_path;
 minTime:any='';
   maxTime:any= '18:30';
   newminTime:any='';
@@ -81,6 +81,7 @@ minTime:any='';
  subcategory_text:any='';
  subcategory:any='';
  project_text:any='';
+ proof_doc:any='yes';
  constructor(private http: HttpClient, public navCtrl: NavController,
     public storage: Storage,public loadingController: LoadingController,
     public alertController: AlertController,
@@ -195,9 +196,9 @@ if(!this.project){
      resalert.present();
 
    });
-}else if(!this.work_description){
+}else if(this.proof_doc=='yes' && !this.depositImage){
   this.alertController.create({
-    message:'Please enter description',
+    message:'Please select image',
      buttons: ['OK']
    }).then(resalert => {
 
@@ -205,6 +206,16 @@ if(!this.project){
 
    });
 }
+// else if(!this.work_description){
+//   this.alertController.create({
+//     message:'Please enter description',
+//      buttons: ['OK']
+//    }).then(resalert => {
+
+//      resalert.present();
+
+//    });
+// }
 else{
 
 	  await loading.present();
@@ -218,6 +229,7 @@ else{
         		"expense_amount" : this.expense_amount,
 				"work_description" : this.work_description,
         		"depositImage2":this.depositImage2,
+            "proof_doc":this.proof_doc
         //"address":this.address,
 			
 			};
@@ -483,9 +495,9 @@ selectChangesub(id) {
         // }
 
         this.expense_amount=res.response_data[0].uwe_amount;
-      
+        this.proof_doc=res.response_data[0].uwe_proof_doc;
         this.work_description=res.response_data[0].uwe_description;
-        this.depositImage=res.response_data[0].uwe_image;
+        this.depositImage=image_path+res.response_data[0].uwe_image;
         this.address=res.response_data[0].uwe_locationin;       
        this.subcategory=res.response_data[0].uwe_subcategory;
         }else{

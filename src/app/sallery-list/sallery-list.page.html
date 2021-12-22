@@ -3,7 +3,7 @@
   <ion-buttons slot="start" >
    <ion-back-button class="button-native"></ion-back-button>
 </ion-buttons>
-<ion-title class="toolbar-title">My Sallery</ion-title>
+<ion-title class="toolbar-title">My Salary</ion-title>
   </ion-toolbar>
 </ion-header> 
 <ion-content>
@@ -33,7 +33,7 @@
                   <ion-col align-self-center size="7" >
                   
                    
-                    <ion-item>
+                    <!-- <ion-item>
           
                       <ion-label position="stacked">Status</ion-label>
                           
@@ -42,14 +42,14 @@
                         <ion-select-option value="inactive">Pending</ion-select-option>
                        
                       </ion-select>
-                        </ion-item>
+                        </ion-item> -->
              </ion-col>
-             <ion-col align-self-center size="5" >
+             <ion-col align-self-center size="12" >
               <ion-item>
               
-          <ion-label position="stacked">Date</ion-label>
+          <ion-label position="stacked">Month & Year</ion-label>
               
-                 <ion-datetime #D (ionChange)="selectDate(D.value)" placeholder="Date (D/M/Y)" displayFormat="DD/MMM/YYYY"  [(ngModel)]="search_date" [ngModelOptions]="{standalone: true}" ></ion-datetime>
+                 <ion-datetime #D (ionChange)="selectDate(D.value)" placeholder="Date (M/Y)" displayFormat="MMM/YYYY"  [(ngModel)]="search_date" [ngModelOptions]="{standalone: true}" ></ion-datetime>
               
             </ion-item>
     

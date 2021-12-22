@@ -50,8 +50,8 @@
                         </ion-label>
                         <a *ngIf="inneritem.ua_checkouttime" slot="end" (click)="edit_attendence2(inneritem.ua_id,inneritem)"><ion-icon name="create-outline"></ion-icon></a>
                         <a *ngIf="!inneritem.ua_checkouttime" slot="end" (click)="edit_attendence(inneritem.ua_id,inneritem)"> <ion-icon name="chevron-forward-outline"></ion-icon></a>
-                        <a  style="margin-left: 22px;margin-right: -15px;"  slot="end" (click)="remove_expense(inneritem.ua_id,0)">  <ion-icon name="close-circle-outline"></ion-icon></a>
-                        
+                        <a *ngIf="inneritem.ua_checkouttime" style="margin-left: 22px;margin-right: -15px;"  slot="end" (click)="remove_expense(inneritem.ua_id,0)">  <ion-icon name="close-circle-outline"></ion-icon></a>
+                        <a *ngIf="!inneritem.ua_checkouttime" style="margin-left: 22px;margin-right: -15px;"  slot="end" (click)="remove_expense(inneritem.ua_id,1)">  <ion-icon name="close-circle-outline"></ion-icon></a>
                     </ion-item>
                   </ion-item-sliding>
                 </div>

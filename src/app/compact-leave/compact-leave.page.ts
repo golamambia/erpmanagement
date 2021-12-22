@@ -147,7 +147,7 @@ setMainTime(){
 
    if(!this.leave_type){
   this.alertController.create({
-    message:'Please select leave type',
+    message:'Please select leave create',
      buttons: ['OK']
    }).then(resalert => {
 
@@ -215,7 +215,7 @@ else{
            resalert.present();
      
          });
-       
+         this.navCtrl.back();
         }else{
         this.alertController.create({
          message: 'Something went wrong',

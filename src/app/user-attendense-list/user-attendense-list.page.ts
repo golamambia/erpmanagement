@@ -122,6 +122,7 @@ export class UserAttendenseListPage implements OnInit {
           "userid": this.userId,
           "search_project":this.search_project,
           "search_date":this.search_date,
+          "checkout":''
           //this.password
         }
         this.http.post(host+'user-attendence-get', JSON.stringify(data),{ headers: headers })

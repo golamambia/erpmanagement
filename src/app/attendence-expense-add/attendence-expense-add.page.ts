@@ -84,6 +84,7 @@ export class AttendenceExpenseAddPage implements OnInit {
  uwe_startkm:any='';
  uwe_endkm:any='';
  expense_date:any='';
+ proof_doc:any='yes';
  constructor(private http: HttpClient, public navCtrl: NavController,
     public storage: Storage,public loadingController: LoadingController,
     public alertController: AlertController,
@@ -267,6 +268,16 @@ else if(this.category==1 && !this.uwe_from){
 
    });
 }
+else if(this.proof_doc=='yes' && !this.depositImage){
+  this.alertController.create({
+    message:'Please select image',
+     buttons: ['OK']
+   }).then(resalert => {
+
+     resalert.present();
+
+   });
+}
 // else if(!this.work_description){
 //   this.alertController.create({
 //     message:'Please enter description',
@@ -301,6 +312,7 @@ else{
         address:this.address,
         expense_date:this.expense_date,
         userid: this.userId,
+        proof_doc:this.proof_doc
 			};
      
 
@@ -336,6 +348,7 @@ else{
         this.depositImage='';
         this.address='';
         this.expense_date='';
+        this.proof_doc='yes';
         }else{
         this.alertController.create({
          message: 'Something went wrong',
