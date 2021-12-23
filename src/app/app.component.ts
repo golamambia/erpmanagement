@@ -67,7 +67,7 @@ page:any;
    this.storage.get("genuserDetails").then(val=>{
       if(val){
         this.userDetails = val;
-        //console.log(val);
+       // console.log(val);
       }else{
         this.userDetails = null;
       }
